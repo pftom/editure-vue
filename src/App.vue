@@ -1,153 +1,197 @@
 <template>
   <div class="editor-content">
-    <editor-menu-bar :editor="editor" v-slot="{ commands, isActive }">
-      <div class="menubar">
-        <button class="menubar__button" @click="commands.undo">
-          undo
-        </button>
-
-        <button class="menubar__button" @click="commands.redo">
-          redo
-        </button>
-        <button
-          class="menubar__button"
-          :class="{ 'is-active': isActive.bold() }"
-          @click="commands.bold"
-        >
-          bold
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{ 'is-active': isActive.italic() }"
-          @click="commands.italic"
-        >
-          italic
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{ 'is-active': isActive.strike() }"
-          @click="commands.strike"
-        >
-          strike
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{ 'is-active': isActive.underline() }"
-          @click="commands.underline"
-        >
-          underline
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{ 'is-active': isActive.code() }"
-          @click="commands.code"
-        >
-          code
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{ 'is-active': isActive.paragraph() }"
-          @click="commands.paragraph"
-        >
-          paragraph
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{ 'is-active': isActive.heading({ level: 1 }) }"
-          @click="commands.heading({ level: 1 })"
-        >
-          H1
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{ 'is-active': isActive.heading({ level: 2 }) }"
-          @click="commands.heading({ level: 2 })"
-        >
-          H2
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{ 'is-active': isActive.heading({ level: 3 }) }"
-          @click="commands.heading({ level: 3 })"
-        >
-          H3
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{ 'is-active': isActive.bullet_list() }"
-          @click="commands.bullet_list"
-        >
-          ul
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{ 'is-active': isActive.ordered_list() }"
-          @click="commands.ordered_list"
-        >
-          ol
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{ 'is-active': isActive.todo_list() }"
-          @click="commands.todo_list"
-        >
-          checklist
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{ 'is-active': isActive.blockquote() }"
-          @click="commands.blockquote"
-        >
-          quote
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{ 'is-active': isActive.code_block() }"
-          @click="commands.code_block"
-        >
-          code-block
-        </button>
-
-        <button class="menubar__button">
-          <input
-            type="file"
-            ref="image"
-            @change="handleImageUpload"
-            class="image-upload"
-          />
-          <span @click="clickImageButton">image</span>
-        </button>
-
-        <button class="menubar__button" @click="commands.horizontal_rule">
-          hr
-        </button>
-      </div>
-    </editor-menu-bar>
     <div class="editor">
-      <editor-content class="editor_content" :editor="editor" />
+      <editor-menu-bar :editor="editor" v-slot="{ commands, isActive }">
+        <div class="menubar">
+          <button class="menubar__button" @click="commands.undo">
+            undo
+          </button>
+
+          <button class="menubar__button" @click="commands.redo">
+            redo
+          </button>
+          <button
+            class="menubar__button"
+            :class="{ 'is-active': isActive.bold() }"
+            @click="commands.bold"
+          >
+            bold
+          </button>
+
+          <button
+            class="menubar__button"
+            :class="{ 'is-active': isActive.italic() }"
+            @click="commands.italic"
+          >
+            italic
+          </button>
+
+          <button
+            class="menubar__button"
+            :class="{ 'is-active': isActive.strike() }"
+            @click="commands.strike"
+          >
+            strike
+          </button>
+
+          <button
+            class="menubar__button"
+            :class="{ 'is-active': isActive.underline() }"
+            @click="commands.underline"
+          >
+            underline
+          </button>
+
+          <button
+            class="menubar__button"
+            :class="{ 'is-active': isActive.code() }"
+            @click="commands.code"
+          >
+            code
+          </button>
+
+          <button
+            class="menubar__button"
+            :class="{ 'is-active': isActive.paragraph() }"
+            @click="commands.paragraph"
+          >
+            paragraph
+          </button>
+
+          <button
+            class="menubar__button"
+            :class="{ 'is-active': isActive.heading({ level: 1 }) }"
+            @click="commands.heading({ level: 1 })"
+          >
+            H1
+          </button>
+
+          <button
+            class="menubar__button"
+            :class="{ 'is-active': isActive.heading({ level: 2 }) }"
+            @click="commands.heading({ level: 2 })"
+          >
+            H2
+          </button>
+
+          <button
+            class="menubar__button"
+            :class="{ 'is-active': isActive.heading({ level: 3 }) }"
+            @click="commands.heading({ level: 3 })"
+          >
+            H3
+          </button>
+
+          <button
+            class="menubar__button"
+            :class="{ 'is-active': isActive.bullet_list() }"
+            @click="commands.bullet_list"
+          >
+            ul
+          </button>
+
+          <button
+            class="menubar__button"
+            :class="{ 'is-active': isActive.ordered_list() }"
+            @click="commands.ordered_list"
+          >
+            ol
+          </button>
+
+          <button
+            class="menubar__button"
+            :class="{ 'is-active': isActive.todo_list() }"
+            @click="commands.todo_list"
+          >
+            checklist
+          </button>
+
+          <button
+            class="menubar__button"
+            :class="{ 'is-active': isActive.blockquote() }"
+            @click="commands.blockquote"
+          >
+            quote
+          </button>
+
+          <button
+            class="menubar__button"
+            :class="{ 'is-active': isActive.code_block() }"
+            @click="commands.code_block"
+          >
+            code-block
+          </button>
+
+          <button class="menubar__button">
+            <input
+              type="file"
+              ref="image"
+              @change="handleImageUpload"
+              class="image-upload"
+            />
+            <span @click="clickImageButton">image</span>
+          </button>
+
+          <button class="menubar__button" @click="commands.horizontal_rule">
+            hr
+          </button>
+        </div>
+      </editor-menu-bar>
+      <editor-menu-bubble
+        class="menububble"
+        :editor="editor"
+        @hide="hideLinkMenu"
+        v-slot="{ commands, isActive, getMarkAttrs, menu }"
+      >
+        <div
+          class="menububble"
+          :class="{ 'is-active': menu.isActive }"
+          :style="`left: ${menu.left}px; bottom: ${menu.bottom}px;`"
+        >
+          <form
+            class="menububble__form"
+            v-if="linkMenuIsActive"
+            @submit.prevent="setLinkUrl(commands.link, linkUrl)"
+          >
+            <input
+              class="menububble__input"
+              type="text"
+              v-model="linkUrl"
+              placeholder="https://"
+              ref="linkInput"
+              @keydown.esc="hideLinkMenu"
+            />
+            <button
+              class="menububble__button"
+              @click="setLinkUrl(commands.link, null)"
+              type="button"
+            >
+              <icon name="remove" />
+            </button>
+          </form>
+
+          <template v-else>
+            <button
+              class="menububble__button"
+              @click="showLinkMenu(getMarkAttrs('link'))"
+              :class="{ 'is-active': isActive.link() }"
+            >
+              <span>{{ isActive.link() ? "Update Link" : "Add Link" }}</span>
+              <icon name="link" />
+            </button>
+          </template>
+        </div>
+      </editor-menu-bubble>
+      <editor-content class="editor__content" :editor="editor" />
     </div>
   </div>
 </template>
 
 <script>
-import { Editor, EditorContent, EditorMenuBar } from "tiptap";
+import { Editor, EditorContent, EditorMenuBar, EditorMenuBubble } from "tiptap";
 import {
   Bold,
   Italic,
-  Link,
   Underline,
   Strike,
   HardBreak,
@@ -166,6 +210,7 @@ import {
 } from "tiptap-extensions";
 import { Title, Doc } from "./extensions";
 import { TodoItem, Image } from "./nodes";
+import { Link } from "./marks";
 import javascript from "highlight.js/lib/languages/javascript";
 import css from "highlight.js/lib/languages/css";
 import xml from "highlight.js/lib/languages/xml";
@@ -175,6 +220,7 @@ export default {
   components: {
     EditorContent,
     EditorMenuBar,
+    EditorMenuBubble,
   },
   data() {
     return {
@@ -207,7 +253,9 @@ export default {
           new Italic(),
           new Underline(),
           new Strike(),
-          new Link(),
+          new Link({
+            onKeyboardShortcut: this.handleOpenLinkMenu,
+          }),
           new HardBreak(),
           new Code(),
           new Doc(),
@@ -227,6 +275,9 @@ export default {
     };
   },
   methods: {
+    handleOpenLinkMenu() {
+      this.showLinkMenu(this.editor.getMarkAttrs("link"));
+    },
     showLinkMenu(attrs) {
       this.linkUrl = attrs.href;
       this.linkMenuIsActive = true;
@@ -305,88 +356,6 @@ export default {
   outline: none;
 }
 
-input {
-  box-sizing: border-box;
-  font-size: 0.85em;
-  width: 100%;
-  border: 2px solid #ddd;
-  background: #fafafa;
-}
-input:focus {
-  outline: 0;
-  border-color: blue;
-}
-body {
-  margin: 0;
-  line-height: 24px;
-}
-h1 {
-  font-size: 28px;
-  line-height: 36px;
-}
-h2 {
-  font-size: 24px;
-  line-height: 32px;
-}
-h3 {
-  font-size: 20px;
-  line-height: 28px;
-}
-h4 {
-  font-size: 16px;
-  line-height: 24px;
-}
-p {
-  line-height: 24px;
-  margin: 0;
-}
-pre {
-  color: white;
-  background-color: rgb(30, 30, 30);
-  white-space: pre-wrap;
-  margin: 0 !important;
-}
-code {
-  font-family: monospace;
-  background-color: #eee;
-  padding: 3px;
-}
-:not(pre) > code {
-  font-family: monospace;
-  background-color: #eee;
-  padding: 3px;
-}
-img {
-  max-width: 100%;
-  max-height: 20em;
-  margin: 1em 0;
-}
-blockquote {
-  border-left: 2px solid #ddd;
-  margin: 0.5em 0;
-  padding-left: 10px;
-  color: #aaa;
-}
-blockquote[dir="rtl"] {
-  border-left: none;
-  margin: 0.5em 0;
-  padding-left: 0;
-  padding-right: 10px;
-  border-right: 2px solid #ddd;
-}
-table {
-  border-collapse: collapse;
-}
-td {
-  padding: 10px;
-  border: 2px solid #ddd;
-}
-a {
-  cursor: pointer;
-  word-wrap: break-word;
-  text-decoration: none;
-  color: #096dd9;
-}
 [data-slate-node="element"]:not(li) {
   margin-top: 1em;
 }
@@ -541,4 +510,6 @@ pre {
   height: 0;
   opacity: 0;
 }
+
+@import "./assets/styles/main";
 </style>
