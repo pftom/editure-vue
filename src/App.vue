@@ -147,6 +147,46 @@
           <button class="menubar__button" @click="commands.horizontal_rule">
             hr
           </button>
+
+          <button
+            class="menubar__button"
+            @click="
+              commands.createTable({
+                rowsCount: 3,
+                colsCount: 3,
+                withHeaderRow: false,
+              })
+            "
+          >
+            table
+          </button>
+
+          <span v-if="isActive.table()">
+            <button class="menubar__button" @click="commands.deleteTable">
+              delete_table
+            </button>
+            <button class="menubar__button" @click="commands.addColumnBefore">
+              add_col_before
+            </button>
+            <button class="menubar__button" @click="commands.addColumnAfter">
+              add_col_after
+            </button>
+            <button class="menubar__button" @click="commands.deleteColumn">
+              delete_col
+            </button>
+            <button class="menubar__button" @click="commands.addRowBefore">
+              add_row_before
+            </button>
+            <button class="menubar__button" @click="commands.addRowAfter">
+              add_row_after
+            </button>
+            <button class="menubar__button" @click="commands.deleteRow">
+              delete_row
+            </button>
+            <button class="menubar__button" @click="commands.toggleCellMerge">
+              combine_cells
+            </button>
+          </span>
         </div>
       </editor-menu-bar>
       <editor-menu-bubble
@@ -218,6 +258,10 @@ import {
   HorizontalRule,
   Placeholder,
   TrailingNode,
+  Table,
+  TableHeader,
+  TableCell,
+  TableRow,
 } from "tiptap-extensions";
 import { Title, Doc } from "./extensions";
 import { TodoItem, Image, Notice } from "./nodes";
@@ -273,6 +317,12 @@ export default {
             onKeyboardShortcut: this.handleOpenLinkMenu,
           }),
           new HardBreak(),
+          new Table({
+            resizable: true,
+          }),
+          new TableHeader(),
+          new TableCell(),
+          new TableRow(),
           new Code(),
           new Doc(),
           new Title(),
