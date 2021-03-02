@@ -50,6 +50,10 @@
             code
           </button>
 
+          <button class="menubar__button" @click="handleToggleLink">
+            link
+          </button>
+
           <button
             class="menubar__button"
             :class="{ 'is-active': isActive.paragraph() }"
@@ -166,7 +170,7 @@
               @click="setLinkUrl(commands.link, null)"
               type="button"
             >
-              <icon name="remove" />
+              remove
             </button>
           </form>
 
@@ -177,7 +181,6 @@
               :class="{ 'is-active': isActive.link() }"
             >
               <span>{{ isActive.link() ? "Update Link" : "Add Link" }}</span>
-              <icon name="link" />
             </button>
           </template>
         </div>
@@ -275,6 +278,13 @@ export default {
     };
   },
   methods: {
+    handleToggleLink() {
+      if (this.editor.isActive.link()) {
+        this.editor.commands.link({});
+      } else {
+        this.handleOpenLinkMenu();
+      }
+    },
     handleOpenLinkMenu() {
       this.showLinkMenu(this.editor.getMarkAttrs("link"));
     },

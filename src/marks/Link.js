@@ -61,13 +61,6 @@ export default class Link extends Mark {
       "Mod-k": () => {
         this.options.onKeyboardShortcut();
         return;
-
-        // if (state.selection.empty) {
-        //   this.options.onKeyboardShortcut();
-        //   return true;
-        // }
-
-        // return updateMark(type, { href: "" })(state, dispatch);
       },
     };
   }
