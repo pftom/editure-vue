@@ -126,6 +126,14 @@
             code-block
           </button>
 
+          <button
+            class="menubar__button"
+            :class="{ 'is-active': isActive.notice() }"
+            @click="commands.notice"
+          >
+            notice
+          </button>
+
           <button class="menubar__button">
             <input
               type="file"
@@ -212,11 +220,13 @@ import {
   TrailingNode,
 } from "tiptap-extensions";
 import { Title, Doc } from "./extensions";
-import { TodoItem, Image } from "./nodes";
+import { TodoItem, Image, Notice } from "./nodes";
 import { Link } from "./marks";
 import javascript from "highlight.js/lib/languages/javascript";
 import css from "highlight.js/lib/languages/css";
 import xml from "highlight.js/lib/languages/xml";
+
+import { dictionary } from "./utils";
 
 export default {
   name: "App",
@@ -242,6 +252,9 @@ export default {
               css,
               xml,
             },
+          }),
+          new Notice({
+            dictionary,
           }),
           new ListItem(),
           new OrderedList(),
@@ -519,6 +532,42 @@ pre {
   width: 0;
   height: 0;
   opacity: 0;
+}
+
+.notice-block {
+  background: rgb(247, 247, 247);
+  border-radius: 4px;
+  padding: 8px 16px;
+  margin: 8px 0;
+}
+
+.notice-block .icon {
+  width: 24px;
+  height: 24px;
+  align-self: flex-start;
+  margin-right: 4px;
+  position: relative;
+  top: 1px;
+}
+
+.notice-block.primary {
+  background: rgb(245, 240, 250);
+}
+
+.notice-block.success {
+  background: rgb(239, 248, 240);
+}
+
+.notice-block.info {
+  background: rgb(238, 247, 250);
+}
+
+.notice-block.warning {
+  background: rgb(253, 248, 234);
+}
+
+.notice-block.danger {
+  background: rgb(252, 241, 242);
 }
 
 @import "./assets/styles/main";
