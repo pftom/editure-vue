@@ -1,5 +1,6 @@
 import { Node, Plugin } from "tiptap";
 import { nodeInputRule } from "tiptap-commands";
+import ImageView from "../components/ImageView.vue";
 
 /**
  * Matches following attributes in Markdown-typed image: [, alt, src, title]
@@ -34,9 +35,13 @@ export default class Image extends Node {
         {
           tag: "img[src]",
           getAttrs: (dom) => ({
-            src: dom.getAttribute("src"),
-            title: dom.getAttribute("title"),
-            alt: dom.getAttribute("alt"),
+            src: dom.getAttribute("src") || "",
+            title: dom.getAttribute("title") || "",
+            alt: dom.getAttribute("alt") || "",
+            width:
+              dom.style.width == null ? null : parseInt(dom.style.width, 10),
+            height:
+              dom.style.height == null ? null : parseInt(dom.style.height, 10),
           }),
         },
       ],
@@ -67,6 +72,10 @@ export default class Image extends Node {
         };
       }),
     ];
+  }
+
+  get view() {
+    return ImageView;
   }
 
   get plugins() {
