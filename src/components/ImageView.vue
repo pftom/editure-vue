@@ -1,17 +1,35 @@
 <template>
-  <span>
-    <div>
+  <span :class="imageViewClass">
+    <div
+      :class="{
+        'image-view__body--focused': selected,
+        'image-view__body--resizing': resizing,
+      }"
+      class="image-view__body"
+    >
       <img
         :src="src"
         :title="node.attrs.title"
         :alt="node.attrs.alt"
         :width="width"
         :height="height"
-        :class="{
-          'image-focused': selected,
-        }"
+        class="image-view__body__image"
         @click="selectImage"
       />
+
+      <div
+        v-if="view.editable"
+        v-show="selected || resizing"
+        class="image-resizer"
+      >
+        <span
+          v-for="direction in resizeDirections"
+          :key="direction"
+          :class="`image-resizer__handler--${direction}`"
+          class="image-resizer__handler"
+          @mousedown="onMouseDown($event, direction)"
+        />
+      </div>
     </div>
   </span>
 </template>
@@ -20,6 +38,7 @@
 import { ResizeObserver } from "@juggle/resize-observer";
 import { resolveImg, RESIZE_DIRECTION } from "../utils/image";
 import { NodeSelection } from "prosemirror-state";
+import { clamp } from "../utils/shared";
 
 export default {
   props: ["node", "updateAttrs", "view", "getPos", "selected"],
@@ -40,7 +59,8 @@ export default {
         RESIZE_DIRECTION.BOTTOM_RIGHT,
       ],
       resizing: false,
-      resizeState: {
+      aspectRatio: null,
+      resizerState: {
         x: 0,
         y: 0,
         w: 0,
@@ -64,6 +84,9 @@ export default {
         this.getMaxSize();
       });
     },
+    imageViewClass() {
+      return ["image-view"];
+    },
   },
   async created() {
     const result = await resolveImg(this.src);
@@ -85,11 +108,6 @@ export default {
     this.resizeObj.disconnect();
   },
   methods: {
-    onChange() {
-      this.updateAttrs({
-        done: !this.node.attrs.done,
-      });
-    },
     getMaxSize() {
       const { width } = getComputedStyle(this.view.dom);
       this.maxSize.width = parseInt(width, 10);
@@ -103,6 +121,90 @@ export default {
       tr = tr.setSelection(selection);
 
       this.view.dispatch(tr);
+    },
+    onMouseDown(e, dir) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      this.resizerState.x = e.clientX;
+      this.resizerState.y = e.clientY;
+
+      const originalWidth = this.originalSize.width;
+      const originalHeight = this.originalSize.height;
+      this.aspectRatio = originalWidth / originalHeight;
+
+      let { width, height } = this.node.attrs;
+      const maxWidth = this.maxSize.width;
+
+      if (width && !height) {
+        width = width > maxWidth ? maxWidth : width;
+        height = Math.round(width / this.aspectRatio);
+      } else if (height && !width) {
+        width = Math.round(height * this.aspectRatio);
+        width = width > maxWidth ? maxWidth : width;
+      } else if (!width && !height) {
+        width = originalWidth > maxWidth ? maxWidth : originalWidth;
+        height = Math.round(width / this.aspectRatio);
+      } else {
+        width = width > maxWidth ? maxWidth : width;
+      }
+
+      this.resizerState.w = width;
+      this.resizerState.h = height;
+      this.resizerState.dir = dir;
+
+      this.resizing = true;
+
+      this.onEvents();
+    },
+    onMouseMove(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!this.resizing) return;
+
+      console.log("hello");
+
+      const { x, w, dir } = this.resizerState;
+
+      const dx = (e.clientX - x) * (/l/.test(dir) ? -1 : 1);
+
+      const width = clamp(w + dx, this.minSize.width, this.maxSize.width);
+      const height = Math.max(
+        Math.round(width / this.aspectRatio),
+        this.minSize.width
+      );
+
+      this.updateAttrs({
+        width,
+        height,
+      });
+    },
+    onMouseUp(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!this.resizing) return;
+
+      this.resizing = false;
+
+      this.resizerState = {
+        x: 0,
+        y: 0,
+        w: 0,
+        h: 0,
+        dir: "",
+      };
+
+      this.offEvents();
+      this.selectImage();
+    },
+
+    onEvents() {
+      document.addEventListener("mousemove", this.onMouseMove, true);
+      document.addEventListener("mouseup", this.onMouseUp, true);
+    },
+    offEvents() {
+      document.removeEventListener("mousemove", this.onMouseMove, true);
+      document.removeEventListener("mouseup", this.onMouseUp, true);
     },
   },
 };
