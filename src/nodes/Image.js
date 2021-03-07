@@ -1,5 +1,7 @@
 import { Node, Plugin } from "tiptap";
 import { nodeInputRule } from "tiptap-commands";
+import ImageView from "../components/ImageView.vue";
+import { DEFAULT_IMAGE_WIDTH } from "../utils/constants";
 
 /**
  * Matches following attributes in Markdown-typed image: [, alt, src, title]
@@ -12,6 +14,12 @@ import { nodeInputRule } from "tiptap-commands";
 const IMAGE_INPUT_REGEX = /!\[(.+|:?)]\((\S+)(?:(?:\s+)["'](\S+)["'])?\)/;
 
 export default class Image extends Node {
+  get defaultOptions() {
+    return {
+      defaultWidth: DEFAULT_IMAGE_WIDTH,
+    };
+  }
+
   get name() {
     return "image";
   }
@@ -20,11 +28,19 @@ export default class Image extends Node {
     return {
       inline: true,
       attrs: {
-        src: {},
+        src: {
+          default: "",
+        },
         alt: {
-          default: null,
+          default: "",
         },
         title: {
+          default: "",
+        },
+        width: {
+          default: null,
+        },
+        height: {
           default: null,
         },
       },
@@ -33,11 +49,19 @@ export default class Image extends Node {
       parseDOM: [
         {
           tag: "img[src]",
-          getAttrs: (dom) => ({
-            src: dom.getAttribute("src"),
-            title: dom.getAttribute("title"),
-            alt: dom.getAttribute("alt"),
-          }),
+          getAttrs: (dom) => {
+            let { width, height } = dom.style;
+            width = width || dom.getAttribute("width") || null;
+            height = height || dom.getAttribute("height") || null;
+
+            return {
+              src: dom.getAttribute("src") || "",
+              title: dom.getAttribute("title") || "",
+              alt: dom.getAttribute("alt") || "",
+              width: width == null ? null : parseInt(width, 10),
+              height: height == null ? null : parseInt(height, 10),
+            };
+          },
         },
       ],
       toDOM: (node) => ["img", node.attrs],
@@ -67,6 +91,10 @@ export default class Image extends Node {
         };
       }),
     ];
+  }
+
+  get view() {
+    return ImageView;
   }
 
   get plugins() {

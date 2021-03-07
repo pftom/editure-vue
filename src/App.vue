@@ -197,7 +197,7 @@
       >
         <div
           class="menububble"
-          :class="{ 'is-active': menu.isActive }"
+          :class="{ 'is-active': !isActive.image() && menu.isActive }"
           :style="`left: ${menu.left}px; bottom: ${menu.bottom}px;`"
         >
           <form
@@ -344,7 +344,7 @@ export default {
     handleToggleLink() {
       if (this.editor.isActive.link()) {
         this.editor.commands.link({});
-      } else {
+      } else if (!this.editor.isActive.image()) {
         this.handleOpenLinkMenu();
       }
     },
@@ -390,7 +390,6 @@ export default {
           const src = readerEvent.target.result;
 
           this.editor.commands.image({ src });
-          console.log("commands");
         };
 
         reader.readAsDataURL(image);
