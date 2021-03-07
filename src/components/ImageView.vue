@@ -30,7 +30,39 @@
           @mousedown="onMouseDown($event, direction)"
         />
       </div>
+
+      <el-popover
+        :value="selected"
+        ref="popover1"
+        placement="top"
+        width="200"
+        trigger="manual"
+      >
+        <el-row>
+          <el-tooltip effect="dark" content="更换图片" placement="top">
+            <el-button
+              size="mini"
+              icon="el-icon-edit-outline"
+              @click="clickImageButton"
+            ></el-button>
+          </el-tooltip>
+          <el-tooltip effect="dark" content="删除" placement="top">
+            <el-button
+              size="mini"
+              icon="el-icon-delete"
+              @click="removeImage"
+            ></el-button>
+          </el-tooltip>
+        </el-row>
+        <div slot="reference" class="image-view__body__placeholder" />
+      </el-popover>
     </div>
+    <input
+      type="file"
+      ref="image"
+      @change="handleImageUpload"
+      class="image-upload"
+    />
   </span>
 </template>
 
@@ -38,10 +70,15 @@
 import { ResizeObserver } from "@juggle/resize-observer";
 import { resolveImg, RESIZE_DIRECTION } from "../utils/image";
 import { NodeSelection } from "prosemirror-state";
+import { deleteSelection } from "prosemirror-commands";
+import { Popover } from "element-ui";
 import { clamp } from "../utils/shared";
 
 export default {
-  props: ["node", "updateAttrs", "view", "getPos", "selected"],
+  props: ["node", "updateAttrs", "view", "getPos", "selected", "editor"],
+  components: {
+    [Popover.name]: Popover,
+  },
   data() {
     return {
       maxSize: {
@@ -205,6 +242,45 @@ export default {
     offEvents() {
       document.removeEventListener("mousemove", this.onMouseMove, true);
       document.removeEventListener("mouseup", this.onMouseUp, true);
+    },
+    removeImage() {
+      const { state, dispatch } = this.view;
+
+      deleteSelection(state, dispatch);
+      this.view.focus();
+    },
+    clickImageButton(e) {
+      e.preventDefault();
+
+      this.$refs.image.click();
+    },
+    handleImageUpload(e) {
+      const { state, dispatch } = this.view;
+
+      deleteSelection(state, dispatch);
+
+      const files = e.target.files;
+      const images = Array.from(files).filter((file) =>
+        /image/i.test(file.type)
+      );
+
+      if (images.length === 0) {
+        return;
+      }
+
+      e.preventDefault();
+
+      images.forEach((image) => {
+        const reader = new FileReader();
+
+        reader.onload = (readerEvent) => {
+          const src = readerEvent.target.result;
+
+          this.editor.commands.image({ src });
+        };
+
+        reader.readAsDataURL(image);
+      });
     },
   },
 };

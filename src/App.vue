@@ -344,7 +344,7 @@ export default {
     handleToggleLink() {
       if (this.editor.isActive.link()) {
         this.editor.commands.link({});
-      } else {
+      } else if (!this.editor.isActive.image()) {
         this.handleOpenLinkMenu();
       }
     },
@@ -390,7 +390,6 @@ export default {
           const src = readerEvent.target.result;
 
           this.editor.commands.image({ src });
-          console.log("commands");
         };
 
         reader.readAsDataURL(image);
