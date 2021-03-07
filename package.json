@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "@juggle/resize-observer": "^3.3.0",
-    "ant-design-vue": "^1.7.4",
     "core-js": "^3.6.5",
     "element-ui": "^2.15.1",
     "highlight.js": "^10.6.0",
