@@ -196,8 +196,6 @@ export default {
       e.stopPropagation();
       if (!this.resizing) return;
 
-      console.log("hello");
-
       const { x, w, dir } = this.resizerState;
 
       const dx = (e.clientX - x) * (/l/.test(dir) ? -1 : 1);
