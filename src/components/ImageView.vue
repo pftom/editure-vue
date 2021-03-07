@@ -27,7 +27,7 @@
           :key="direction"
           :class="`image-resizer__handler--${direction}`"
           class="image-resizer__handler"
-          @mousedown="onMouseDown($event, direction)"
+          @mousedown.stop.prevent="onMouseDown($event, direction)"
         />
       </div>
 
@@ -160,9 +160,6 @@ export default {
       this.view.dispatch(tr);
     },
     onMouseDown(e, dir) {
-      e.preventDefault();
-      e.stopPropagation();
-
       this.resizerState.x = e.clientX;
       this.resizerState.y = e.clientY;
 

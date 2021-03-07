@@ -197,7 +197,7 @@
       >
         <div
           class="menububble"
-          :class="{ 'is-active': menu.isActive }"
+          :class="{ 'is-active': !isActive.image() && menu.isActive }"
           :style="`left: ${menu.left}px; bottom: ${menu.bottom}px;`"
         >
           <form
