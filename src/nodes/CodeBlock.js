@@ -1,13 +1,10 @@
 import { Node } from "tiptap";
 import low from "lowlight/lib/core";
-import {
-  toggleBlockType,
-  setBlockType,
-  textblockTypeInputRule,
-} from "tiptap-commands";
+import { toggleBlockType, setBlockType } from "tiptap-commands";
 
 import CodeBlockView from "../components/CodeBlockView.vue";
 import HighlightPlugin from "../plugins/Highlight";
+import EnterBlockPlugin from "../plugins/EnterBlockPlugin";
 import SelectAllWithinBlockPlugin from "../plugins/SelectAllWithinBlock";
 import { languages } from "../utils/languages";
 
@@ -89,18 +86,12 @@ export default class CodeBlockHighlight extends Node {
   keys({ type }) {
     return {
       "Shift-Ctrl-\\": setBlockType(type),
-      "Mod+A": () => {
-        console.log("select all called");
-      },
     };
-  }
-
-  inputRules({ type }) {
-    return [textblockTypeInputRule(/^```$/, type)];
   }
 
   get plugins() {
     return [
+      EnterBlockPlugin({}),
       HighlightPlugin({ name: this.name }),
       SelectAllWithinBlockPlugin({ name: this.name }),
     ];
