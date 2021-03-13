@@ -250,7 +250,6 @@ import {
   Heading,
   History,
   Blockquote,
-  CodeBlockHighlight,
   ListItem,
   OrderedList,
   BulletList,
@@ -264,11 +263,8 @@ import {
   TableRow,
 } from "tiptap-extensions";
 import { Title, Doc } from "./extensions";
-import { TodoItem, Image, Notice } from "./nodes";
+import { TodoItem, Image, Notice, CodeBlock } from "./nodes";
 import { Link } from "./marks";
-import javascript from "highlight.js/lib/languages/javascript";
-import css from "highlight.js/lib/languages/css";
-import xml from "highlight.js/lib/languages/xml";
 
 import { dictionary } from "./utils";
 
@@ -290,13 +286,7 @@ export default {
           }),
           new Image(),
           new Blockquote(),
-          new CodeBlockHighlight({
-            languages: {
-              javascript,
-              css,
-              xml,
-            },
-          }),
+          new CodeBlock(),
           new Notice({
             dictionary,
           }),
