@@ -100,6 +100,9 @@ export default class CodeBlockHighlight extends Node {
   }
 
   get plugins() {
-    return [HighlightPlugin({ name: this.name }), SelectAllWithinBlockPlugin()];
+    return [
+      HighlightPlugin({ name: this.name }),
+      SelectAllWithinBlockPlugin({ name: this.name }),
+    ];
   }
 }

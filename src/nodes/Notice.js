@@ -1,6 +1,8 @@
 import { Node } from "tiptap";
 import { wrappingInputRule, toggleWrap } from "tiptap-commands";
 
+import SelectAllWithinBlockPlugin from "../plugins/SelectAllWithinBlock";
+
 function getStyle(className) {
   if (className.includes("default")) {
     return "default";
@@ -107,5 +109,9 @@ export default class Notice extends Node {
 
   inputRules({ type }) {
     return [wrappingInputRule(/^\s*:::\s$/, type)];
+  }
+
+  get plugins() {
+    return [SelectAllWithinBlockPlugin({ name: this.name })];
   }
 }
