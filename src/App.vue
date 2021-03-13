@@ -258,13 +258,17 @@ import {
   HorizontalRule,
   Placeholder,
   TrailingNode,
-  Table,
-  TableHeader,
-  TableCell,
-  TableRow,
 } from "tiptap-extensions";
 import { Title, Doc } from "./extensions";
-import { TodoItem, Image, Notice } from "./nodes";
+import {
+  TodoItem,
+  Image,
+  Notice,
+  Table,
+  TableHeader,
+  TableRow,
+  TableCell,
+} from "./nodes";
 import { Link } from "./marks";
 import javascript from "highlight.js/lib/languages/javascript";
 import css from "highlight.js/lib/languages/css";
