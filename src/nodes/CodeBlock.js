@@ -91,7 +91,7 @@ export default class CodeBlockHighlight extends Node {
 
   get plugins() {
     return [
-      EnterBlockPlugin({}),
+      EnterBlockPlugin({ regex: /^```\s*(\w*)$/, name: this.name }),
       HighlightPlugin({ name: this.name }),
       SelectAllWithinBlockPlugin({ name: this.name }),
     ];

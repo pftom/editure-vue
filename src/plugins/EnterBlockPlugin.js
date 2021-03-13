@@ -1,7 +1,8 @@
 import { keymap } from "prosemirror-keymap";
+// import { TextSelection } from "prosemirror-state";
+import {} from "tiptap";
 
 export default function EnterBlockPlugin({ regex, name }) {
-  console.log("match", match);
   console.log("name", name);
   return keymap({
     Enter: (state, dispatch) => {
@@ -9,16 +10,23 @@ export default function EnterBlockPlugin({ regex, name }) {
       console.log("state", state);
       console.log("dispatch", dispatch);
       const content = state.selection.$head.parent.textContent;
+      console.log("content", content);
       const match = content.match(regex);
+      console.log("match", match);
+
       if (match) {
-        console.log("match", match);
+        // dispatch(
+        //   state.tr.delete(state.selection.$head.start(), state.selection.head)
+        // );
+        dispatch(
+          state.tr.setBlockType(
+            state.selection.from,
+            state.selection.to,
+            state.schema.nodes[name]
+          )
+        );
+        return true;
       }
-      console.log(
-        "content",
-        state.selection.$head
-          .node()
-          .textBetween(state.selection.$head.start(), state.selection.head)
-      );
       return false;
     },
   });
