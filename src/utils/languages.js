@@ -2,7 +2,7 @@ import actionscript from "highlight.js/lib/languages/actionscript";
 import apacheconf from "highlight.js/lib/languages/apache";
 import applescript from "highlight.js/lib/languages/applescript";
 import basic from "highlight.js/lib/languages/basic";
-// import bash from "highlight.js/lib/languages/bash";
+import bash from "highlight.js/lib/languages/bash";
 import c from "highlight.js/lib/languages/c";
 import cpp from "highlight.js/lib/languages/cpp";
 import csharp from "highlight.js/lib/languages/csharp";
@@ -26,7 +26,33 @@ import haskell from "highlight.js/lib/languages/haskell";
 import java from "highlight.js/lib/languages/java";
 import javascript from "highlight.js/lib/languages/javascript";
 import json from "highlight.js/lib/languages/json";
+import julia from "highlight.js/lib/languages/julia";
+import kotlin from "highlight.js/lib/languages/kotlin";
+import less from "highlight.js/lib/languages/less";
+import lisp from "highlight.js/lib/languages/lisp";
+import lua from "highlight.js/lib/languages/lua";
+import makefile from "highlight.js/lib/languages/makefile";
+import markdown from "highlight.js/lib/languages/markdown";
+import matlab from "highlight.js/lib/languages/matlab";
+import nginx from "highlight.js/lib/languages/nginx";
+import objectivec from "highlight.js/lib/languages/objectivec";
+import ocaml from "highlight.js/lib/languages/ocaml";
+import perl from "highlight.js/lib/languages/perl";
+import php from "highlight.js/lib/languages/php";
+import powershell from "highlight.js/lib/languages/powershell";
+import protobuf from "highlight.js/lib/languages/protobuf";
+import python from "highlight.js/lib/languages/python";
+import r from "highlight.js/lib/languages/r";
+import ruby from "highlight.js/lib/languages/ruby";
+import rust from "highlight.js/lib/languages/rust";
+import scala from "highlight.js/lib/languages/scala";
+import scss from "highlight.js/lib/languages/scss";
+import sql from "highlight.js/lib/languages/sql";
+import swift from "highlight.js/lib/languages/swift";
+import plaintext from "highlight.js/lib/languages/plaintext";
+import typescript from "highlight.js/lib/languages/typescript";
 import xml from "highlight.js/lib/languages/xml";
+import yaml from "highlight.js/lib/languages/yaml";
 
 export const languages = {
   actionscript: {
@@ -208,206 +234,208 @@ export const languages = {
     extensions: [".json"],
     mapping: json,
   },
-  //   jsx: {
-  //     name: "React JSX",
-  //     extensions: [".jsx"],
-  //   },
-  //   julia: {
-  //     name: "Julia",
-  //     extensions: [".jl"],
-  //   },
-  //   kotlin: {
-  //     name: "Kotlin",
-  //     extensions: [".kt", ".ktm", ".kts"],
-  //   },
-  //   less: {
-  //     name: "Less",
-  //     extensions: [".less"],
-  //   },
-  //   lisp: {
-  //     aliases: ["emacs", "elisp", "emacs-lisp"],
-  //     name: "Lisp",
-  //     extensions: [".lisp", ".lsp", ".emacs", ".el"],
-  //   },
-  //   lua: {
-  //     name: "Lua",
-  //     extensions: [".lua", ".fcgi", ".nse"],
-  //     filenames: [".luacheckrc"],
-  //   },
-  //   makefile: {
-  //     aliases: ["make"],
-  //     name: "Makefile",
-  //     extensions: [".make"],
-  //     filenames: ["Makefile"],
-  //   },
-  //   markdown: {
-  //     aliases: ["md", "pandoc"],
-  //     name: "Markdown",
-  //     extensions: [".md", ".markdown", ".mdx"],
-  //   },
-  //   matlab: {
-  //     aliases: ["octave"],
-  //     name: "Matlab",
-  //     extensions: [".m", ".matlab"],
-  //   },
-  //   nginx: {
-  //     name: "Nginx Configuration",
-  //     filenames: ["nginx.conf"],
-  //   },
-  //   objectivec: {
-  //     aliases: ["objc", "obj-c"],
-  //     name: "Objective-C",
-  //     extensions: [".m", ".h"],
-  //   },
-  //   ocaml: {
-  //     name: "OCaml",
-  //     extensions: [".ml"],
-  //   },
-  //   perl: {
-  //     aliases: ["cperl"],
-  //     name: "Perl",
-  //     extensions: [".pl", ".ph"],
-  //     filenames: ["cpanfile", "Rexfile"],
-  //   },
-  //   php: {
-  //     name: "PHP",
-  //     extensions: [".php"],
-  //   },
-  //   powershell: {
-  //     name: "PowerShell",
-  //     extensions: [".ps1", ".psd1", ".psm1"],
-  //   },
-  //   protobuf: {
-  //     name: "Protocol Buffers",
-  //     extensions: [".proto"],
-  //   },
-  //   pug: {
-  //     aliases: ["jade"],
-  //     name: "Pug",
-  //     extensions: [".jade", ".pug"],
-  //   },
-  //   python: {
-  //     aliases: ["py"],
-  //     name: "Python",
-  //     extensions: [".py"],
-  //   },
-  //   r: {
-  //     aliases: ["rscript"],
-  //     name: "R",
-  //     extensions: [".r", ".rd", ".rsx"],
-  //   },
-  //   ruby: {
-  //     aliases: ["rb", "jruby", "rake"],
-  //     name: "Ruby",
-  //     extensions: [".rb", ".ruby", ".mspec", ".rake", ".spec", ".gemspec"],
-  //     filenames: [
-  //       ".irbrc",
-  //       ".pryrc",
-  //       "Brewfile",
-  //       "Buildfile",
-  //       "Gemfile",
-  //       "Gemfile.lock",
-  //       "Mavenfile",
-  //       "Puppetfile",
-  //       "Rakefile",
-  //       "Snapfile",
-  //       "Vagrantfile",
-  //     ],
-  //   },
-  //   rust: {
-  //     name: "Rust",
-  //     extensions: [".rs", ".rs.in"],
-  //   },
-  //   sass: {
-  //     name: "Sass",
-  //     extensions: [".sass"],
-  //   },
-  //   scss: {
-  //     name: "Scss",
-  //     extensions: [".scss"],
-  //   },
-  //   scala: {
-  //     name: "Scala",
-  //     extensions: [".scala", ".kojo", ".sbt", ".sc"],
-  //   },
-  //   shell: {
-  //     aliases: ["sh", "bash", "shell-script", "zsh"],
-  //     name: "Bash",
-  //     extensions: [".sh", ".bash", ".zsh"],
-  //     mapping: bash,
-  //   },
-  //   sql: {
-  //     name: "SQL",
-  //     extensions: [".sql", ".cql", ".ddl", ".mysql"],
-  //   },
-  //   svelte: {
-  //     name: "Svelte",
-  //     highlight: "html",
-  //     extensions: [".svelte"],
-  //   },
-  //   swift: {
-  //     name: "Swift",
-  //     extensions: [".swift"],
-  //   },
-  //   text: {
-  //     name: "Plain Text",
-  //     extensions: [".txt"],
-  //   },
-  //   textile: {
-  //     name: "Textile",
-  //     extensions: [".textile"],
-  //   },
-  //   toml: {
-  //     name: "TOML",
-  //     extensions: [".toml"],
-  //   },
-  //   tsx: {
-  //     name: "React TSX",
-  //     extensions: [".tsx"],
-  //   },
-  //   typescript: {
-  //     aliases: ["ts"],
-  //     name: "TypeScript",
-  //     extensions: [".ts"],
-  //   },
-  //   vue: {
-  //     name: "Vue",
-  //     highlight: "html",
-  //     extensions: [".vue"],
-  //   },
-  //   wasm: {
-  //     aliases: ["wast", "webassembly"],
-  //     name: "WebAssembly",
-  //     extensions: [".wast", ".wat"],
-  //   },
-  //   xml: {
-  //     aliases: ["rss", "xsd", "wsdl"],
-  //     name: "XML",
-  //     extensions: [".xml", ".ant"],
-  //     filenames: [
-  //       ".classpath",
-  //       ".cproject",
-  //       ".project",
-  //       "App.config",
-  //       "NuGet.config",
-  //       "Settings.StyleCop",
-  //       "Web.Debug.config",
-  //       "Web.Release.config",
-  //       "Web.config",
-  //       "packages.config",
-  //     ],
-  //     mapping: "xml",
-  //   },
-  //   yaml: {
-  //     aliases: ["yml"],
-  //     name: "YAML",
-  //     extensions: [".yml", ".yaml"],
-  //     filenames: [
-  //       ".clang-format",
-  //       ".clang-tidy",
-  //       ".gemrc",
-  //       "glide.lock",
-  //       "yarn.lock",
-  //     ],
-  //   },
+  jsx: {
+    name: "React JSX",
+    extensions: [".jsx"],
+    mapping: javascript,
+  },
+  julia: {
+    name: "Julia",
+    extensions: [".jl"],
+    mapping: julia,
+  },
+  kotlin: {
+    name: "Kotlin",
+    extensions: [".kt", ".ktm", ".kts"],
+    mapping: kotlin,
+  },
+  less: {
+    name: "Less",
+    extensions: [".less"],
+    mapping: less,
+  },
+  lisp: {
+    aliases: ["emacs", "elisp", "emacs-lisp"],
+    name: "Lisp",
+    extensions: [".lisp", ".lsp", ".emacs", ".el"],
+    mapping: lisp,
+  },
+  lua: {
+    name: "Lua",
+    extensions: [".lua", ".fcgi", ".nse"],
+    filenames: [".luacheckrc"],
+    mapping: lua,
+  },
+  makefile: {
+    aliases: ["make"],
+    name: "Makefile",
+    extensions: [".make"],
+    filenames: ["Makefile"],
+    mapping: makefile,
+  },
+  markdown: {
+    aliases: ["md", "pandoc"],
+    name: "Markdown",
+    extensions: [".md", ".markdown", ".mdx"],
+    mapping: markdown,
+  },
+  matlab: {
+    aliases: ["octave"],
+    name: "Matlab",
+    extensions: [".m", ".matlab"],
+    mapping: matlab,
+  },
+  nginx: {
+    name: "Nginx Configuration",
+    filenames: ["nginx.conf"],
+    mapping: nginx,
+  },
+  objectivec: {
+    aliases: ["objc", "obj-c"],
+    name: "Objective-C",
+    extensions: [".m", ".h"],
+    mapping: objectivec,
+  },
+  ocaml: {
+    name: "OCaml",
+    extensions: [".ml"],
+    mapping: ocaml,
+  },
+  perl: {
+    aliases: ["cperl"],
+    name: "Perl",
+    extensions: [".pl", ".ph"],
+    filenames: ["cpanfile", "Rexfile"],
+    mapping: perl,
+  },
+  php: {
+    name: "PHP",
+    extensions: [".php"],
+    mapping: php,
+  },
+  powershell: {
+    name: "PowerShell",
+    extensions: [".ps1", ".psd1", ".psm1"],
+    mapping: powershell,
+  },
+  protobuf: {
+    name: "Protocol Buffers",
+    extensions: [".proto"],
+    mapping: protobuf,
+  },
+  python: {
+    aliases: ["py"],
+    name: "Python",
+    extensions: [".py"],
+    mapping: python,
+  },
+  r: {
+    aliases: ["rscript"],
+    name: "R",
+    extensions: [".r", ".rd", ".rsx"],
+    mapping: r,
+  },
+  ruby: {
+    aliases: ["rb", "jruby", "rake"],
+    name: "Ruby",
+    extensions: [".rb", ".ruby", ".mspec", ".rake", ".spec", ".gemspec"],
+    filenames: [
+      ".irbrc",
+      ".pryrc",
+      "Brewfile",
+      "Buildfile",
+      "Gemfile",
+      "Gemfile.lock",
+      "Mavenfile",
+      "Puppetfile",
+      "Rakefile",
+      "Snapfile",
+      "Vagrantfile",
+    ],
+    mapping: ruby,
+  },
+  rust: {
+    name: "Rust",
+    extensions: [".rs", ".rs.in"],
+    mapping: rust,
+  },
+  scala: {
+    name: "Scala",
+    extensions: [".scala", ".kojo", ".sbt", ".sc"],
+    mapping: scala,
+  },
+  scss: {
+    name: "Scss",
+    extensions: [".scss"],
+    mapping: scss,
+  },
+  shell: {
+    aliases: ["sh", "bash", "shell-script", "zsh"],
+    name: "Bash",
+    extensions: [".sh", ".bash", ".zsh"],
+    mapping: bash,
+  },
+  sql: {
+    name: "SQL",
+    extensions: [".sql", ".cql", ".ddl", ".mysql"],
+    mapping: sql,
+  },
+  swift: {
+    name: "Swift",
+    extensions: [".swift"],
+    mapping: swift,
+  },
+  text: {
+    name: "Plain Text",
+    extensions: [".txt"],
+    mapping: plaintext,
+  },
+  tsx: {
+    name: "React TSX",
+    extensions: [".tsx"],
+    mapping: typescript,
+  },
+  typescript: {
+    aliases: ["ts"],
+    name: "TypeScript",
+    extensions: [".ts"],
+    mapping: typescript,
+  },
+  vue: {
+    name: "Vue",
+    highlight: "html",
+    extensions: [".vue"],
+    mapping: xml,
+  },
+  xml: {
+    aliases: ["rss", "xsd", "wsdl"],
+    name: "XML",
+    extensions: [".xml", ".ant"],
+    filenames: [
+      ".classpath",
+      ".cproject",
+      ".project",
+      "App.config",
+      "NuGet.config",
+      "Settings.StyleCop",
+      "Web.Debug.config",
+      "Web.Release.config",
+      "Web.config",
+      "packages.config",
+    ],
+    mapping: xml,
+  },
+  yaml: {
+    aliases: ["yml"],
+    name: "YAML",
+    extensions: [".yml", ".yaml"],
+    filenames: [
+      ".clang-format",
+      ".clang-tidy",
+      ".gemrc",
+      "glide.lock",
+      "yarn.lock",
+    ],
+    mapping: yaml,
+  },
 };
