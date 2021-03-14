@@ -1,10 +1,10 @@
 import { Node } from "tiptap";
 import low from "lowlight/lib/core";
+import { keymap } from "prosemirror-keymap";
 import { toggleBlockType, setBlockType } from "tiptap-commands";
 
 import CodeBlockView from "../components/CodeBlockView.vue";
 import HighlightPlugin from "../plugins/Highlight";
-import EnterBlockPlugin from "../plugins/EnterBlockPlugin";
 import SelectAllWithinBlockPlugin from "../plugins/SelectAllWithinBlock";
 import { languages } from "../utils/languages";
 
@@ -91,9 +91,30 @@ export default class CodeBlockHighlight extends Node {
 
   get plugins() {
     return [
-      EnterBlockPlugin({ regex: /^```\s*(\w*)$/, name: this.name }),
       HighlightPlugin({ name: this.name }),
       SelectAllWithinBlockPlugin({ name: this.name }),
+      keymap({
+        Enter: (state, dispatch) => {
+          const selection = state.selection;
+          const match = selection.$head.parent.textContent.match(
+            /^```\s*(\w*)$/
+          );
+          if (match) {
+            dispatch(
+              state.tr
+                .setBlockType(
+                  selection.from,
+                  selection.to,
+                  state.schema.nodes[this.name],
+                  { language: match[1] }
+                )
+                .delete(selection.$head.start(), selection.head)
+            );
+            return true;
+          }
+          return false;
+        },
+      }),
     ];
   }
 }

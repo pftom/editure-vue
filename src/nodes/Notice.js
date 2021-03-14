@@ -1,7 +1,10 @@
 import { Node } from "tiptap";
-import { wrappingInputRule, toggleWrap } from "tiptap-commands";
+import { toggleWrap } from "tiptap-commands";
+import { findWrapping } from "prosemirror-transform";
+import { keymap } from "prosemirror-keymap";
 
 import SelectAllWithinBlockPlugin from "../plugins/SelectAllWithinBlock";
+import { TextSelection } from "prosemirror-state";
 
 function getStyle(className) {
   if (className.includes("default")) {
@@ -107,11 +110,42 @@ export default class Notice extends Node {
     }
   };
 
-  inputRules({ type }) {
-    return [wrappingInputRule(/^\s*:::\s$/, type)];
-  }
-
   get plugins() {
-    return [SelectAllWithinBlockPlugin({ name: this.name })];
+    return [
+      SelectAllWithinBlockPlugin({ name: this.name }),
+      keymap({
+        Enter: (state, dispatch) => {
+          const selection = state.selection;
+          const match = selection.$head.parent.textContent.match(
+            /^:::\s*(\w*)$/
+          );
+
+          if (match) {
+            const { $from, $to } = state.selection;
+            const nodeType = state.schema.nodes[this.name];
+            const attrs = { style: match[1] };
+            const range = $from.blockRange($to),
+              wrapping = range && findWrapping(range, nodeType, attrs);
+            if (!wrapping) return false;
+
+            dispatch(
+              state.tr
+                .setSelection(
+                  TextSelection.create(
+                    state.doc,
+                    selection.$head.start(),
+                    selection.head
+                  )
+                )
+                .wrap(range, wrapping)
+                .deleteSelection()
+                .scrollIntoView()
+            );
+            return true;
+          }
+          return false;
+        },
+      }),
+    ];
   }
 }
