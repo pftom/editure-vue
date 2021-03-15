@@ -8,6 +8,16 @@ import HighlightPlugin from "../plugins/Highlight";
 import SelectAllWithinBlockPlugin from "../plugins/SelectAllWithinBlock";
 import { languages } from "../utils/languages";
 
+function getLanguageFromRawMatch(rawMatch) {
+  const raw = rawMatch.toLowerCase();
+  for (const [lang, langObj] of Object.entries(languages)) {
+    if (lang === raw || langObj.aliases?.includes(raw)) {
+      return lang;
+    }
+  }
+  return "auto";
+}
+
 export default class CodeBlockHighlight extends Node {
   constructor() {
     super();
@@ -106,7 +116,7 @@ export default class CodeBlockHighlight extends Node {
                   selection.from,
                   selection.to,
                   state.schema.nodes[this.name],
-                  { language: match[1] }
+                  { language: getLanguageFromRawMatch(match[1]) }
                 )
                 .delete(selection.$head.start(), selection.head)
             );

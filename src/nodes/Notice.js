@@ -6,30 +6,20 @@ import { keymap } from "prosemirror-keymap";
 import SelectAllWithinBlockPlugin from "../plugins/SelectAllWithinBlock";
 import { TextSelection } from "prosemirror-state";
 
+const STYLES = ["default", "primary", "success", "info", "warning", "danger"];
+
 function getStyle(className) {
-  if (className.includes("default")) {
-    return "default";
+  for (const style of STYLES) {
+    if (className.includes(style)) return style;
   }
+  return "default";
+}
 
-  if (className.includes("primary")) {
-    return "primary";
+function getStyleFromRawMatch(rawMatch) {
+  if (STYLES.includes(rawMatch.toLowerCase())) {
+    return rawMatch.toLowerCase();
   }
-
-  if (className.includes("success")) {
-    return "success";
-  }
-
-  if (className.includes("info")) {
-    return "info";
-  }
-
-  if (className.includes("warning")) {
-    return "warning";
-  }
-
-  if (className.includes("danger")) {
-    return "danger";
-  }
+  return "default";
 }
 
 export default class Notice extends Node {
@@ -123,7 +113,7 @@ export default class Notice extends Node {
           if (match) {
             const { $from, $to } = state.selection;
             const nodeType = state.schema.nodes[this.name];
-            const attrs = { style: match[1] };
+            const attrs = { style: getStyleFromRawMatch(match[1]) };
             const range = $from.blockRange($to),
               wrapping = range && findWrapping(range, nodeType, attrs);
             if (!wrapping) return false;
