@@ -1,12 +1,18 @@
 import { Node } from "tiptap";
-import TableNodes from "./TableNodes";
 
 export default class TableRow extends Node {
   get name() {
-    return "table_row";
+    return "tr";
   }
 
   get schema() {
-    return TableNodes.table_row;
+    return {
+      content: "(th | td)*",
+      tableRole: "row",
+      parseDOM: [{ tag: "tr" }],
+      toDOM() {
+        return ["tr", 0];
+      },
+    };
   }
 }

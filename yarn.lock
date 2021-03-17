@@ -922,6 +922,13 @@
   resolved "https://registry.npm.taobao.org/@juggle/resize-observer/download/@juggle/resize-observer-3.3.0.tgz#2e7a2935adbfae46f9efbd1e1455254ee7ea2219"
   integrity sha1-LnopNa2/rkb5770eFFUlTufqIhk=
 
+"@linusborg/vue-simple-portal@^0.1.5":
+  version "0.1.5"
+  resolved "https://bnpm.byted.org/@linusborg/vue-simple-portal/-/@linusborg/vue-simple-portal-0.1.5.tgz#d21ec54d3345713de7985e042b89e8ccb74833f8"
+  integrity sha1-0h7FTTNFcT3nmF4EK4nozLdIM/g=
+  dependencies:
+    nanoid "^3.1.20"
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.npm.taobao.org/@mrmlnc/readdir-enhanced/download/@mrmlnc/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"
@@ -5250,6 +5257,11 @@ lodash.memoize@^4.1.2:
   resolved "https://registry.npm.taobao.org/lodash.memoize/download/lodash.memoize-4.1.2.tgz?cache=0&sync_timestamp=1589682725270&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Flodash.memoize%2Fdownload%2Flodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
   integrity sha1-vMbEmkKihA7Zl/Mj6tpezRguC/4=
 
+lodash.some@^4.6.0:
+  version "4.6.0"
+  resolved "https://bnpm.byted.org/lodash.some/-/lodash.some-4.6.0.tgz#1bb9f314ef6b8baded13b549169b2a945eb68e4d"
+  integrity sha1-G7nzFO9ri63tE7VJFpsqlF62jk0=
+
 lodash.transform@^4.6.0:
   version "4.6.0"
   resolved "https://registry.npm.taobao.org/lodash.transform/download/lodash.transform-4.6.0.tgz#12306422f63324aed8483d3f38332b5f670547a0"
@@ -5619,6 +5631,11 @@ nan@^2.12.1:
   version "2.14.2"
   resolved "https://registry.npm.taobao.org/nan/download/nan-2.14.2.tgz?cache=0&sync_timestamp=1602591642885&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fnan%2Fdownload%2Fnan-2.14.2.tgz#f5376400695168f4cc694ac9393d0c9585eeea19"
   integrity sha1-9TdkAGlRaPTMaUrJOT0MlYXu6hk=
+
+nanoid@^3.1.20:
+  version "3.1.21"
+  resolved "https://bnpm.byted.org/nanoid/-/nanoid-3.1.21.tgz#25bfee7340ac4185866fbfb2c9006d299da1be7f"
+  integrity sha1-Jb/uc0CsQYWGb7+yyQBtKZ2hvn8=
 
 nanomatch@^1.2.9:
   version "1.2.13"
@@ -6765,7 +6782,7 @@ prosemirror-view@^1.0.0, prosemirror-view@^1.1.0, prosemirror-view@^1.13.3, pros
     prosemirror-state "^1.0.0"
     prosemirror-transform "^1.1.0"
 
-prosemirror-view@^1.17.8:
+prosemirror-view@^1.17.8, prosemirror-view@^1.18.0:
   version "1.18.0"
   resolved "https://bnpm.byted.org/prosemirror-view/-/prosemirror-view-1.18.0.tgz#92d27b2583877938c529e173e6e3a0f3f6aa0e1c"
   integrity sha1-ktJ7JYOHeTjFKeFz5uOg8/aqDhw=

@@ -1,28 +1,24 @@
 import { Node } from "tiptap";
 import { Decoration, DecorationSet } from "prosemirror-view";
 import { Plugin } from "prosemirror-state";
-import {
-  isTableSelected,
-  isRowSelected,
-  getCellsInColumn,
-} from "prosemirror-utils";
+import { isColumnSelected, getCellsInRow } from "prosemirror-utils";
 
-export default class TableCell extends Node {
+export default class TableHeaderCell extends Node {
   get name() {
-    return "td";
+    return "th";
   }
 
   get schema() {
     return {
       content: "paragraph+",
-      tableRole: "cell",
+      tableRole: "header_cell",
       isolating: true,
-      parseDOM: [{ tag: "td" }],
+      parseDOM: [{ tag: "th" }],
       toDOM(node) {
         return [
-          "td",
+          "th",
           node.attrs.alignment
-            ? { style: `text-align: ${node.style.alignment}` }
+            ? { style: `text-align: ${node.attrs.alignment}` }
             : {},
           0,
         ];
@@ -42,47 +38,32 @@ export default class TableCell extends Node {
           decorations: (state) => {
             const { doc, selection } = state;
             const decorations = [];
-            const cells = getCellsInColumn(0)(selection);
+            const cells = getCellsInRow(0)(selection);
 
             if (cells) {
               cells.forEach(({ pos }, index) => {
-                if (index === 0) {
-                  decorations.push(
-                    Decoration.widget(pos + 1, () => {
-                      let className = "grip-table";
-                      const selected = isTableSelected(selection);
-                      if (selected) {
-                        className += " selected";
-                      }
-                      const grip = document.createElement("a");
-                      grip.className = className;
-                      grip.addEventListener("mousedown", (event) => {
-                        event.preventDefault();
-                        this.options.onSelectTable(state);
-                      });
-                      return grip;
-                    })
-                  );
-                }
                 decorations.push(
                   Decoration.widget(pos + 1, () => {
-                    const rowSelected = isRowSelected(index)(selection);
+                    const colSelected = isColumnSelected(index)(selection);
+                    let className = "grip-column";
 
-                    let className = "grip-row";
-                    if (rowSelected) {
+                    if (colSelected) {
                       className += " selected";
                     }
+
                     if (index === 0) {
                       className += " first";
                     } else if (index === cells.length - 1) {
                       className += " last";
                     }
+
                     const grip = document.createElement("a");
                     grip.className = className;
                     grip.addEventListener("mousedown", (event) => {
                       event.preventDefault();
-                      this.options.onSelectRow(index, state);
+                      this.options.onSelectColumn(index, state);
                     });
+
                     return grip;
                   })
                 );

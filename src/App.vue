@@ -234,6 +234,14 @@
         </div>
       </editor-menu-bubble>
       <editor-content class="editor__content" :editor="editor" />
+      <selection-toolbar
+        v-if="editor"
+        :view="editor.view"
+        :isActive="linkMenuIsActive"
+        :dictionary="dictionary"
+        :on-open="handleOpenSelectionMenu"
+        :on-close="handleCloseSelectionMenu"
+      ></selection-toolbar>
     </div>
   </div>
 </template>
@@ -265,7 +273,7 @@ import {
   Image,
   Notice,
   Table,
-  TableHeader,
+  TableHeaderCell,
   TableRow,
   TableCell,
 } from "./nodes";
@@ -275,6 +283,8 @@ import css from "highlight.js/lib/languages/css";
 import xml from "highlight.js/lib/languages/xml";
 
 import { dictionary } from "./utils";
+import { selectColumn, selectRow, selectTable } from "prosemirror-utils";
+import SelectionToolbar from "@/components/SelectionToolbar";
 
 export default {
   name: "App",
@@ -282,6 +292,7 @@ export default {
     EditorContent,
     EditorMenuBar,
     EditorMenuBubble,
+    SelectionToolbar,
   },
   data() {
     return {
@@ -302,7 +313,7 @@ export default {
             },
           }),
           new Notice({
-            dictionary,
+            dictionary: this.dictionary,
           }),
           new ListItem(),
           new OrderedList(),
@@ -324,8 +335,13 @@ export default {
           new Table({
             resizable: true,
           }),
-          new TableHeader(),
-          new TableCell(),
+          new TableCell({
+            onSelectTable: this.handleSelectTable,
+            onSelectRow: this.handleSelectRow,
+          }),
+          new TableHeaderCell({
+            onSelectColumn: this.handleSelectColumn,
+          }),
           new TableRow(),
           new Code(),
           new Doc(),
@@ -342,6 +358,8 @@ export default {
       }),
       linkUrl: null,
       linkMenuIsActive: false,
+      selectionMenuOpen: false,
+      dictionary: dictionary,
     };
   },
   methods: {
@@ -398,6 +416,21 @@ export default {
 
         reader.readAsDataURL(image);
       });
+    },
+    handleSelectRow(index, state) {
+      this.editor.view.dispatch(selectRow(index)(state.tr));
+    },
+    handleSelectColumn(index, state) {
+      this.editor.view.dispatch(selectColumn(index)(state.tr));
+    },
+    handleSelectTable(state) {
+      this.editor.view.dispatch(selectTable(state.tr));
+    },
+    handleOpenSelectionMenu() {
+      this.selectionMenuOpen = true;
+    },
+    handleCloseSelectionMenu() {
+      this.selectionMenuOpen = false;
     },
   },
   beforeDestroy() {
@@ -624,4 +657,186 @@ pre {
 }
 
 @import "./assets/styles/main";
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 4px;
+  margin-top: 1em;
+  box-sizing: border-box;
+
+  * {
+    box-sizing: border-box;
+  }
+
+  tr {
+    position: relative;
+    border-bottom: 1px solid #c5ccd3;
+  }
+
+  td,
+  th {
+    position: relative;
+    vertical-align: top;
+    border: 1px solid #c5ccd3;
+    position: relative;
+    padding: 4px 8px;
+    text-align: left;
+    min-width: 100px;
+  }
+
+  .selectedCell {
+    background: #e5f7ff;
+
+    /* fixes Firefox background color painting over border:
+     * https://bugzilla.mozilla.org/show_bug.cgi?id=688556 */
+    background-clip: padding-box;
+  }
+
+  .grip-column {
+    /* usage of ::after for all of the table grips works around a bug in
+     * prosemirror-tables that causes Safari to hang when selecting a cell
+     * in an empty table:
+     * https://github.com/ProseMirror/prosemirror/issues/947 */
+    &::after {
+      content: "";
+      cursor: pointer;
+      position: absolute;
+      top: -16px;
+      left: 0;
+      width: 100%;
+      height: 12px;
+      background: #c5ccd3;
+      border-bottom: 3px solid #fff;
+      display: block;
+    }
+
+    &:hover::after {
+      background: #181a1b;
+    }
+    &.first::after {
+      border-top-left-radius: 3px;
+    }
+    &.last::after {
+      border-top-right-radius: 3px;
+    }
+    &.selected::after {
+      background: #1ab6ff;
+    }
+  }
+
+  .grip-row {
+    &::after {
+      content: "";
+      cursor: pointer;
+      position: absolute;
+      left: -16px;
+      top: 0;
+      height: 100%;
+      width: 12px;
+      background: #c5ccd3;
+      border-right: 3px solid #fff;
+      display: block;
+    }
+
+    &:hover::after {
+      background: #181a1b;
+    }
+    &.first::after {
+      border-top-left-radius: 3px;
+    }
+    &.last::after {
+      border-bottom-left-radius: 3px;
+    }
+    &.selected::after {
+      background: #1ab6ff;
+    }
+  }
+
+  .grip-table {
+    &::after {
+      content: "";
+      cursor: pointer;
+      background: #c5ccd3;
+      width: 13px;
+      height: 13px;
+      border-radius: 13px;
+      border: 2px solid #fff;
+      position: absolute;
+      top: -18px;
+      left: -18px;
+      display: block;
+    }
+
+    &:hover::after {
+      background: #181a1b;
+    }
+    &.selected::after {
+      background: #1ab6ff;
+    }
+  }
+}
+
+.scrollable-wrapper {
+  position: relative;
+  margin: 0.5em 0px;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+
+  &:hover {
+    scrollbar-color: #c5ccd3 #f4f7fa;
+  }
+
+  & ::-webkit-scrollbar {
+    height: 14px;
+    background-color: transparent;
+  }
+
+  &:hover ::-webkit-scrollbar {
+    background-color: #f4f7fa;
+  }
+
+  & ::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border: 3px solid transparent;
+    border-radius: 7px;
+  }
+
+  &:hover ::-webkit-scrollbar-thumb {
+    background-color: #2f3336;
+    border-color: #f4f7fa;
+  }
+}
+
+.scrollable {
+  overflow-y: hidden;
+  overflow-x: auto;
+  padding-left: 1em;
+  margin-left: -1em;
+  border-left: 1px solid transparent;
+  border-right: 1px solid transparent;
+  transition: border 250ms ease-in-out 0s;
+}
+
+.scrollable-shadow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -1em;
+  width: 16px;
+  transition: box-shadow 250ms ease-in-out;
+  border: 0px solid transparent;
+  border-left-width: 1em;
+  pointer-events: none;
+
+  &.left {
+    box-shadow: 16px 0 16px -16px inset rgba(0, 0, 0, 0.25);
+    border-left: 1em solid #fff;
+  }
+
+  &.right {
+    right: 0;
+    left: auto;
+    box-shadow: -16px 0 16px -16px inset rgba(0, 0, 0, 0.25);
+  }
+}
 </style>
