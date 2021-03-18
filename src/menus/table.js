@@ -1,5 +1,3 @@
-import baseDictionary from "../utils/dictionary";
-
 export default function tableMenuItems(dictionary) {
   return [
     {

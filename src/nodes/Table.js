@@ -51,7 +51,7 @@ export default class Table extends Node {
           [
             "div",
             { class: "scrollable" },
-            ["table", { class: "tuture-table" }, ["tbody", 0]],
+            ["table", { class: "rme-table" }, ["tbody", 0]],
           ],
         ];
       },
@@ -71,6 +71,8 @@ export default class Table extends Node {
         const resolvedPos = tr.doc.resolve(offset);
 
         tr.setSelection(TextSelection.near(resolvedPos));
+
+        console.log("table");
 
         dispatch(tr);
       },

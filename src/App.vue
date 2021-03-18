@@ -154,7 +154,7 @@
               commands.createTable({
                 rowsCount: 3,
                 colsCount: 3,
-                withHeaderRow: false,
+                withHeaderRow: true,
               })
             "
           >
@@ -449,6 +449,11 @@ export default {
   margin-top: 60px;
 }
 
+p {
+  margin: 0;
+  padding: 0;
+}
+
 .editor-content {
   width: 666px;
   margin: auto;
@@ -457,7 +462,7 @@ export default {
 
 .editor {
   border: 2px solid #ddd;
-  padding: 10px;
+  padding: 40px;
   outline: none;
 }
 
@@ -552,64 +557,6 @@ button {
   font-weight: bolder;
 }
 
-/* 代码高亮 */
-pre {
-  &::before {
-    content: attr(data-language);
-    text-transform: uppercase;
-    display: block;
-    text-align: right;
-    font-weight: bold;
-    font-size: 0.6rem;
-  }
-  code {
-    .hljs-comment,
-    .hljs-quote {
-      color: #999999;
-    }
-    .hljs-variable,
-    .hljs-template-variable,
-    .hljs-attribute,
-    .hljs-tag,
-    .hljs-name,
-    .hljs-regexp,
-    .hljs-link,
-    .hljs-name,
-    .hljs-selector-id,
-    .hljs-selector-class {
-      color: #f2777a;
-    }
-    .hljs-number,
-    .hljs-meta,
-    .hljs-built_in,
-    .hljs-builtin-name,
-    .hljs-literal,
-    .hljs-type,
-    .hljs-params {
-      color: #f99157;
-    }
-    .hljs-string,
-    .hljs-symbol,
-    .hljs-bullet {
-      color: #99cc99;
-    }
-    .hljs-title,
-    .hljs-section {
-      color: #ffcc66;
-    }
-    .hljs-keyword,
-    .hljs-selector-tag {
-      color: #6699cc;
-    }
-    .hljs-emphasis {
-      font-style: italic;
-    }
-    .hljs-strong {
-      font-weight: 700;
-    }
-  }
-}
-
 .image-upload {
   position: absolute;
   z-index: -1;
@@ -620,223 +567,8 @@ pre {
   opacity: 0;
 }
 
-.notice-block {
-  background: rgb(247, 247, 247);
-  border-radius: 4px;
-  padding: 8px 16px;
-  margin: 8px 0;
-}
-
-.notice-block .icon {
-  width: 24px;
-  height: 24px;
-  align-self: flex-start;
-  margin-right: 4px;
-  position: relative;
-  top: 1px;
-}
-
-.notice-block.primary {
-  background: rgb(245, 240, 250);
-}
-
-.notice-block.success {
-  background: rgb(239, 248, 240);
-}
-
-.notice-block.info {
-  background: rgb(238, 247, 250);
-}
-
-.notice-block.warning {
-  background: rgb(253, 248, 234);
-}
-
-.notice-block.danger {
-  background: rgb(252, 241, 242);
-}
-
 @import "./assets/styles/main";
-table {
-  width: 100%;
-  border-collapse: collapse;
-  border-radius: 4px;
-  margin-top: 1em;
-  box-sizing: border-box;
-
-  * {
-    box-sizing: border-box;
-  }
-
-  tr {
-    position: relative;
-    border-bottom: 1px solid #c5ccd3;
-  }
-
-  td,
-  th {
-    position: relative;
-    vertical-align: top;
-    border: 1px solid #c5ccd3;
-    position: relative;
-    padding: 4px 8px;
-    text-align: left;
-    min-width: 100px;
-  }
-
-  .selectedCell {
-    background: #e5f7ff;
-
-    /* fixes Firefox background color painting over border:
-     * https://bugzilla.mozilla.org/show_bug.cgi?id=688556 */
-    background-clip: padding-box;
-  }
-
-  .grip-column {
-    /* usage of ::after for all of the table grips works around a bug in
-     * prosemirror-tables that causes Safari to hang when selecting a cell
-     * in an empty table:
-     * https://github.com/ProseMirror/prosemirror/issues/947 */
-    &::after {
-      content: "";
-      cursor: pointer;
-      position: absolute;
-      top: -16px;
-      left: 0;
-      width: 100%;
-      height: 12px;
-      background: #c5ccd3;
-      border-bottom: 3px solid #fff;
-      display: block;
-    }
-
-    &:hover::after {
-      background: #181a1b;
-    }
-    &.first::after {
-      border-top-left-radius: 3px;
-    }
-    &.last::after {
-      border-top-right-radius: 3px;
-    }
-    &.selected::after {
-      background: #1ab6ff;
-    }
-  }
-
-  .grip-row {
-    &::after {
-      content: "";
-      cursor: pointer;
-      position: absolute;
-      left: -16px;
-      top: 0;
-      height: 100%;
-      width: 12px;
-      background: #c5ccd3;
-      border-right: 3px solid #fff;
-      display: block;
-    }
-
-    &:hover::after {
-      background: #181a1b;
-    }
-    &.first::after {
-      border-top-left-radius: 3px;
-    }
-    &.last::after {
-      border-bottom-left-radius: 3px;
-    }
-    &.selected::after {
-      background: #1ab6ff;
-    }
-  }
-
-  .grip-table {
-    &::after {
-      content: "";
-      cursor: pointer;
-      background: #c5ccd3;
-      width: 13px;
-      height: 13px;
-      border-radius: 13px;
-      border: 2px solid #fff;
-      position: absolute;
-      top: -18px;
-      left: -18px;
-      display: block;
-    }
-
-    &:hover::after {
-      background: #181a1b;
-    }
-    &.selected::after {
-      background: #1ab6ff;
-    }
-  }
-}
-
-.scrollable-wrapper {
-  position: relative;
-  margin: 0.5em 0px;
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
-
-  &:hover {
-    scrollbar-color: #c5ccd3 #f4f7fa;
-  }
-
-  & ::-webkit-scrollbar {
-    height: 14px;
-    background-color: transparent;
-  }
-
-  &:hover ::-webkit-scrollbar {
-    background-color: #f4f7fa;
-  }
-
-  & ::-webkit-scrollbar-thumb {
-    background-color: transparent;
-    border: 3px solid transparent;
-    border-radius: 7px;
-  }
-
-  &:hover ::-webkit-scrollbar-thumb {
-    background-color: #2f3336;
-    border-color: #f4f7fa;
-  }
-}
-
-.scrollable {
-  overflow-y: hidden;
-  overflow-x: auto;
-  padding-left: 1em;
-  margin-left: -1em;
-  border-left: 1px solid transparent;
-  border-right: 1px solid transparent;
-  transition: border 250ms ease-in-out 0s;
-}
-
-.scrollable-shadow {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: -1em;
-  width: 16px;
-  transition: box-shadow 250ms ease-in-out;
-  border: 0px solid transparent;
-  border-left-width: 1em;
-  pointer-events: none;
-
-  &.left {
-    box-shadow: 16px 0 16px -16px inset rgba(0, 0, 0, 0.25);
-    border-left: 1em solid #fff;
-  }
-
-  &.right {
-    right: 0;
-    left: auto;
-    box-shadow: -16px 0 16px -16px inset rgba(0, 0, 0, 0.25);
-  }
-}
+@import "./assets/styles/table.scss";
+@import "./assets/styles/code.scss";
+@import "./assets/styles/note.scss";
 </style>

@@ -49,7 +49,6 @@ export default {
   computed: {
     items() {
       const { state } = this.view;
-      console.log("view", this.view, state);
       const colIndex = getColumnIndex(state.selection);
       const rowIndex = getRowIndex(state.selection);
       const isTableSelection = colIndex !== undefined && rowIndex !== undefined;
@@ -63,8 +62,6 @@ export default {
       } else if (rowIndex !== undefined) {
         items = getTableRowMenuItems(state, rowIndex, dictionary);
       }
-
-      console.log("items", items);
 
       return items;
     },
