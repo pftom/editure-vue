@@ -237,6 +237,7 @@
       <selection-toolbar
         v-if="editor"
         :view="editor.view"
+        :commands="editor.commands"
         :isActive="linkMenuIsActive"
         :dictionary="dictionary"
         :on-open="handleOpenSelectionMenu"

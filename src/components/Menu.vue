@@ -5,15 +5,16 @@
         v-if="item.name === 'separator' && item.visible !== false"
         :key="index"
       ></toolbar-separator>
+
       <toolbar-button
         v-else-if="item.visible !== false"
         :key="index"
-        @click="handleClick"
+        @click.native="handleClick(item)"
         :active="item.active ? item.active(view.state) : false"
       >
-        <tooltip :tooltip="item.tooltip" :placement="top">
-          <span>{{ item.iconText }}</span>
-        </tooltip>
+        <custom-tooltip :tooltip="item.tooltip" placement="top">
+          <i :class="item.icon" style="color: white;"></i>
+        </custom-tooltip>
       </toolbar-button>
     </template>
   </div>
@@ -22,11 +23,17 @@
 <script>
 import ToolbarButton from "@/components/ToolbarButton";
 import ToolbarSeparator from "@/components/ToolbarSeparator";
-import Tooltip from "@/components/Tooltip";
+import CustomTooltip from "./Tooltip";
 
 export default {
-  components: { ToolbarButton, ToolbarSeparator, Tooltip },
-  props: ["view", "items"],
+  components: { ToolbarButton, ToolbarSeparator, CustomTooltip },
+  props: ["view", "items", "commands"],
+  methods: {
+    handleClick(item) {
+      console.log("item", item);
+      return item.name && this.commands[item.name](item.attrs);
+    },
+  },
 };
 </script>
 

@@ -1,6 +1,6 @@
 <template>
   <floating-toolbar :view="view" :active="visible">
-    <Menu :items="items"></Menu>
+    <Menu :items="items" :view="view" :commands="commands"></Menu>
   </floating-toolbar>
 </template>
 
@@ -36,7 +36,7 @@ function isVisible(props) {
 }
 
 export default {
-  props: ["view"],
+  props: ["view", "commands"],
   data() {
     return {
       isActive: false,
@@ -51,6 +51,7 @@ export default {
       const { state } = this.view;
       const colIndex = getColumnIndex(state.selection);
       const rowIndex = getRowIndex(state.selection);
+
       const isTableSelection = colIndex !== undefined && rowIndex !== undefined;
 
       let items = [];
@@ -62,6 +63,8 @@ export default {
       } else if (rowIndex !== undefined) {
         items = getTableRowMenuItems(state, rowIndex, dictionary);
       }
+
+      console.log("colIndex", items);
 
       return items;
     },

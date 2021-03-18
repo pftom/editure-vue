@@ -22,7 +22,7 @@ export default class TableCell extends Node {
         return [
           "td",
           node.attrs.alignment
-            ? { style: `text-align: ${node.style.alignment}` }
+            ? { style: `text-align: ${node.attrs.alignment}` }
             : {},
           0,
         ];
