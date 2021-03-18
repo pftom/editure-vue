@@ -68,7 +68,7 @@ export const isMarkActive = (type) => (state) => {
     : state.doc.rangeHasMark(from, to, type);
 };
 
-export const isNodeActive = (type, attrs) => (state) => {
+export const isNodeActive = (type, attrs = {}) => (state) => {
   const node =
     findSelectedNodeOfType(type)(state.selection) ||
     findParentNode((node) => node.type === type)(state.selection);

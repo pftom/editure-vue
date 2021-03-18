@@ -197,12 +197,12 @@
       >
         <div
           class="menububble"
+          v-if="linkMenuIsActive"
           :class="{ 'is-active': !isActive.image() && menu.isActive }"
           :style="`left: ${menu.left}px; bottom: ${menu.bottom}px;`"
         >
           <form
             class="menububble__form"
-            v-if="linkMenuIsActive"
             @submit.prevent="setLinkUrl(commands.link, linkUrl)"
           >
             <input
@@ -222,7 +222,7 @@
             </button>
           </form>
 
-          <template v-else>
+          <!-- <template v-else>
             <button
               class="menububble__button"
               @click="showLinkMenu(getMarkAttrs('link'))"
@@ -230,7 +230,7 @@
             >
               <span>{{ isActive.link() ? "Update Link" : "Add Link" }}</span>
             </button>
-          </template>
+          </template> -->
         </div>
       </editor-menu-bubble>
       <editor-content class="editor__content" :editor="editor" />
@@ -242,6 +242,9 @@
         :dictionary="dictionary"
         :on-open="handleOpenSelectionMenu"
         :on-close="handleCloseSelectionMenu"
+        :on-click-link="onClickLink"
+        :on-create-link="onCreateLink"
+        :on-keyboard-shortcut="handleOpenLinkMenu"
       ></selection-toolbar>
     </div>
   </div>

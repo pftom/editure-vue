@@ -13,7 +13,10 @@
         :active="item.active ? item.active(view.state) : false"
       >
         <custom-tooltip :tooltip="item.tooltip" placement="top">
-          <i :class="item.icon" style="color: white;"></i>
+          <font-awesome-icon
+            :icon="item.icon"
+            style="color: white;"
+          ></font-awesome-icon>
         </custom-tooltip>
       </toolbar-button>
     </template>
@@ -30,7 +33,6 @@ export default {
   props: ["view", "items", "commands"],
   methods: {
     handleClick(item) {
-      console.log("item", item);
       return item.name && this.commands[item.name](item.attrs);
     },
   },

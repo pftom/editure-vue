@@ -5,10 +5,17 @@
 </template>
 
 <script>
-import { getColumnIndex, getRowIndex } from "../queries";
+import {
+  getColumnIndex,
+  getMarkRange,
+  getRowIndex,
+  isMarkActive,
+  isNodeActive,
+} from "../queries";
 import getTableMenuItems from "../menus/table";
 import getTableColMenuItems from "../menus/tableCol";
 import getTableRowMenuItems from "../menus/tableRow";
+import getFormattingMenuItems from "../menus/formatting";
 import { dictionary } from "../utils";
 
 // 组件
@@ -49,10 +56,28 @@ export default {
   computed: {
     items() {
       const { state } = this.view;
+      console.log("state", state.schema.nodes);
+      const { selection } = state;
+      const isCodeSelection = isNodeActive(state.schema.nodes.code_block)(
+        state
+      );
+
+      // toolbar
+      if (isCodeSelection) {
+        return null;
+      }
+
       const colIndex = getColumnIndex(state.selection);
       const rowIndex = getRowIndex(state.selection);
 
       const isTableSelection = colIndex !== undefined && rowIndex !== undefined;
+
+      const link = isMarkActive(state.schema.marks.link)(state);
+      const range = getMarkRange(selection.$from, state.schema.marks.link);
+
+      if (link && range) {
+        return this.$emit("on-keyboard-shortcut");
+      }
 
       let items = [];
       // TODO: formatting/link/image 相关的选中弹窗
@@ -62,9 +87,9 @@ export default {
         items = getTableColMenuItems(state, colIndex, dictionary);
       } else if (rowIndex !== undefined) {
         items = getTableRowMenuItems(state, rowIndex, dictionary);
+      } else {
+        items = getFormattingMenuItems(state, dictionary);
       }
-
-      console.log("colIndex", items);
 
       return items;
     },
