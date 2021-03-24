@@ -235,7 +235,6 @@ import {
   Heading,
   History,
   Blockquote,
-  CodeBlockHighlight,
   ListItem,
   OrderedList,
   BulletList,
@@ -249,15 +248,13 @@ import {
   TodoItem,
   Image,
   Notice,
+  CodeBlock,
   Table,
   TableHeaderCell,
   TableRow,
   TableCell,
 } from "./nodes";
 import { Link } from "./marks";
-import javascript from "highlight.js/lib/languages/javascript";
-import css from "highlight.js/lib/languages/css";
-import xml from "highlight.js/lib/languages/xml";
 
 import { dictionary } from "./utils";
 import { selectColumn, selectRow, selectTable } from "prosemirror-utils";
@@ -282,13 +279,7 @@ export default {
           }),
           new Image(),
           new Blockquote(),
-          new CodeBlockHighlight({
-            languages: {
-              javascript,
-              css,
-              xml,
-            },
-          }),
+          new CodeBlock(),
           new Notice({
             dictionary: this.dictionary,
           }),
