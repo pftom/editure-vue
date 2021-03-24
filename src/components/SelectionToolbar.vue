@@ -56,8 +56,6 @@ export default {
   computed: {
     items() {
       const { state } = this.view;
-      console.log("state", state.schema.nodes);
-      const { selection } = state;
       const isCodeSelection = isNodeActive(state.schema.nodes.code_block)(
         state
       );
@@ -72,13 +70,6 @@ export default {
 
       const isTableSelection = colIndex !== undefined && rowIndex !== undefined;
 
-      const link = isMarkActive(state.schema.marks.link)(state);
-      const range = getMarkRange(selection.$from, state.schema.marks.link);
-
-      if (link && range) {
-        return this.$emit("on-keyboard-shortcut");
-      }
-
       let items = [];
       // TODO: formatting/link/image 相关的选中弹窗
       if (isTableSelection) {
@@ -92,6 +83,12 @@ export default {
       }
 
       return items;
+    },
+    linkMenuVisible() {
+      const link = isMarkActive(state.schema.marks.link)(state);
+      const range = getMarkRange(selection.$from, state.schema.marks.link);
+
+      return link && range;
     },
     visible() {
       return isVisible({ view: this.view });

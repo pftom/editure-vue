@@ -6,7 +6,7 @@ export default function tableColMenuItems(state, index, dictionary) {
   return [
     {
       name: "setColumnAttr",
-      icon: "el-icon-d-arrow-left",
+      icon: "align-left",
       tooltip: dictionary.alignLeft,
       attrs: { index, alignment: "left" },
       active: isNodeActive(schema.nodes.th, {
@@ -17,7 +17,7 @@ export default function tableColMenuItems(state, index, dictionary) {
     },
     {
       name: "setColumnAttr",
-      icon: "el-icon-sort",
+      icon: "align-center",
       tooltip: dictionary.alignCenter,
       attrs: { index, alignment: "center" },
       active: isNodeActive(schema.nodes.th, {
@@ -28,7 +28,7 @@ export default function tableColMenuItems(state, index, dictionary) {
     },
     {
       name: "setColumnAttr",
-      icon: "el-icon-d-arrow-right",
+      icon: "align-right",
       tooltip: dictionary.alignRight,
       attrs: { index, alignment: "right" },
       active: isNodeActive(schema.nodes.th, {
@@ -42,13 +42,13 @@ export default function tableColMenuItems(state, index, dictionary) {
     },
     {
       name: "addColumnBefore",
-      icon: "el-icon-back",
+      icon: "chevron-left",
       tooltip: dictionary.addColumnBefore,
       active: () => false,
     },
     {
       name: "addColumnAfter",
-      icon: "el-icon-right",
+      icon: "chevron-right",
       tooltip: dictionary.addColumnAfter,
       active: () => false,
     },
@@ -57,7 +57,7 @@ export default function tableColMenuItems(state, index, dictionary) {
     },
     {
       name: "deleteColumn",
-      icon: "el-icon-delete",
+      icon: "trash-alt",
       tooltip: dictionary.deleteColumn,
       active: () => false,
     },

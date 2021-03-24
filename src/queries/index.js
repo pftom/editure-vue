@@ -1,23 +1,18 @@
 import { findParentNode, findSelectedNodeOfType } from "prosemirror-utils";
 
 export function getColumnIndex(selection) {
-  console.log("selection", selection.isColSelection);
   const isColSelection = selection.isColSelection && selection.isColSelection();
-  console.log("hello", isColSelection);
   if (!isColSelection) return undefined;
 
   const path = selection.$from.path;
-  console.log("colPath", path);
   return path[path.length - 5];
 }
 
 export function getRowIndex(selection) {
-  console.log("selection", selection.isRowSelection);
   const isRowSelection = selection.isRowSelection && selection.isRowSelection();
   if (!isRowSelection) return undefined;
 
   const path = selection.$from.path;
-  console.log("rowPath", path);
   return path[path.length - 8];
 }
 

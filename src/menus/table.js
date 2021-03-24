@@ -2,7 +2,7 @@ export default function tableMenuItems(dictionary) {
   return [
     {
       name: "deleteTable",
-      icon: "el-icon-delete",
+      icon: "trash-alt",
       tooltip: dictionary.deleteTable,
       active: () => false,
     },

@@ -2,14 +2,14 @@ export default function tableColMenuItems(state, index, dictionary) {
   return [
     {
       name: "addRowBefore",
-      icon: "el-icon-top",
+      icon: "chevron-up",
       tooltip: dictionary.addRowBefore,
       attrs: { index: index - 1 },
       active: () => false,
     },
     {
       name: "addRowAfter",
-      icon: "el-icon-bottom",
+      icon: "chevron-down",
       tooltip: dictionary.addRowAfter,
       attrs: { index },
       active: () => false,
@@ -19,7 +19,7 @@ export default function tableColMenuItems(state, index, dictionary) {
     },
     {
       name: "deleteRow",
-      icon: "el-icon-delete",
+      icon: "trash-alt",
       tooltip: dictionary.deleteRow,
       active: () => false,
     },

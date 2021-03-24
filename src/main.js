@@ -8,11 +8,34 @@ import {
   faCode,
   faLink,
   faUnderline,
+  faChevronLeft,
+  faChevronRight,
+  faTrashAlt,
+  faChevronDown,
+  faChevronUp,
+  faAlignCenter,
+  faAlignRight,
+  faAlignLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import App from "./App.vue";
 
-library.add(faBold, faItalic, faStrikethrough, faUnderline, faCode, faLink);
+library.add(
+  faBold,
+  faItalic,
+  faStrikethrough,
+  faUnderline,
+  faCode,
+  faLink,
+  faChevronLeft,
+  faChevronRight,
+  faTrashAlt,
+  faChevronDown,
+  faChevronUp,
+  faAlignCenter,
+  faAlignRight,
+  faAlignLeft
+);
 
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
