@@ -84,12 +84,12 @@ export default {
 
       return items;
     },
-    linkMenuVisible() {
-      const link = isMarkActive(state.schema.marks.link)(state);
-      const range = getMarkRange(selection.$from, state.schema.marks.link);
+    // linkMenuVisible() {
+    //   const link = isMarkActive(state.schema.marks.link)(state);
+    //   const range = getMarkRange(selection.$from, state.schema.marks.link);
 
-      return link && range;
-    },
+    //   return link && range;
+    // },
     visible() {
       return isVisible({ view: this.view });
     },

@@ -160,33 +160,6 @@
           >
             table
           </button>
-
-          <span v-if="isActive.table()">
-            <button class="menubar__button" @click="commands.deleteTable">
-              delete_table
-            </button>
-            <button class="menubar__button" @click="commands.addColumnBefore">
-              add_col_before
-            </button>
-            <button class="menubar__button" @click="commands.addColumnAfter">
-              add_col_after
-            </button>
-            <button class="menubar__button" @click="commands.deleteColumn">
-              delete_col
-            </button>
-            <button class="menubar__button" @click="commands.addRowBefore">
-              add_row_before
-            </button>
-            <button class="menubar__button" @click="commands.addRowAfter">
-              add_row_after
-            </button>
-            <button class="menubar__button" @click="commands.deleteRow">
-              delete_row
-            </button>
-            <button class="menubar__button" @click="commands.toggleCellMerge">
-              combine_cells
-            </button>
-          </span>
         </div>
       </editor-menu-bar>
       <editor-menu-bubble
