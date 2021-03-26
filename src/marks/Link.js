@@ -1,5 +1,5 @@
 import { Mark, Plugin } from "tiptap";
-import { updateMark, removeMark, pasteRule } from "tiptap-commands";
+import { updateMark, removeMark, pasteRule, toggleMark } from "tiptap-commands";
 import { getMarkAttrs } from "tiptap-utils";
 
 export default class Link extends Mark {
@@ -47,12 +47,8 @@ export default class Link extends Mark {
   }
 
   commands({ type }) {
-    return (attrs) => {
-      if (attrs.href) {
-        return updateMark(type, attrs);
-      }
-
-      return removeMark(type);
+    return ({ href } = { href: "" }) => {
+      return toggleMark(type, { href });
     };
   }
 
