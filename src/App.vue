@@ -154,39 +154,12 @@
               commands.createTable({
                 rowsCount: 3,
                 colsCount: 3,
-                withHeaderRow: false,
+                withHeaderRow: true,
               })
             "
           >
             table
           </button>
-
-          <span v-if="isActive.table()">
-            <button class="menubar__button" @click="commands.deleteTable">
-              delete_table
-            </button>
-            <button class="menubar__button" @click="commands.addColumnBefore">
-              add_col_before
-            </button>
-            <button class="menubar__button" @click="commands.addColumnAfter">
-              add_col_after
-            </button>
-            <button class="menubar__button" @click="commands.deleteColumn">
-              delete_col
-            </button>
-            <button class="menubar__button" @click="commands.addRowBefore">
-              add_row_before
-            </button>
-            <button class="menubar__button" @click="commands.addRowAfter">
-              add_row_after
-            </button>
-            <button class="menubar__button" @click="commands.deleteRow">
-              delete_row
-            </button>
-            <button class="menubar__button" @click="commands.toggleCellMerge">
-              combine_cells
-            </button>
-          </span>
         </div>
       </editor-menu-bar>
       <editor-menu-bubble
@@ -197,12 +170,12 @@
       >
         <div
           class="menububble"
+          v-if="linkMenuIsActive"
           :class="{ 'is-active': !isActive.image() && menu.isActive }"
           :style="`left: ${menu.left}px; bottom: ${menu.bottom}px;`"
         >
           <form
             class="menububble__form"
-            v-if="linkMenuIsActive"
             @submit.prevent="setLinkUrl(commands.link, linkUrl)"
           >
             <input
@@ -236,7 +209,7 @@
             </button>
           </form>
 
-          <template v-else>
+          <!-- <template v-else>
             <button
               class="menububble__button"
               @click="showLinkMenu(getMarkAttrs('link'))"
@@ -244,10 +217,22 @@
             >
               <i class="el-icon-link"></i>
             </button>
-          </template>
+          </template> -->
         </div>
       </editor-menu-bubble>
       <editor-content class="editor__content" :editor="editor" />
+      <selection-toolbar
+        v-if="editor"
+        :view="editor.view"
+        :commands="editor.commands"
+        :isActive="linkMenuIsActive"
+        :dictionary="dictionary"
+        :on-open="handleOpenSelectionMenu"
+        :on-close="handleCloseSelectionMenu"
+        :on-click-link="onClickLink"
+        :on-create-link="onCreateLink"
+        :on-keyboard-shortcut="handleOpenLinkMenu"
+      ></selection-toolbar>
     </div>
   </div>
 </template>
@@ -264,7 +249,6 @@ import {
   Heading,
   History,
   Blockquote,
-  CodeBlockHighlight,
   ListItem,
   OrderedList,
   BulletList,
@@ -272,19 +256,23 @@ import {
   HorizontalRule,
   Placeholder,
   TrailingNode,
-  Table,
-  TableHeader,
-  TableCell,
-  TableRow,
 } from "tiptap-extensions";
 import { Title, Doc } from "./extensions";
-import { TodoItem, Image, Notice } from "./nodes";
+import {
+  TodoItem,
+  Image,
+  Notice,
+  CodeBlock,
+  Table,
+  TableHeaderCell,
+  TableRow,
+  TableCell,
+} from "./nodes";
 import { Link } from "./marks";
-import javascript from "highlight.js/lib/languages/javascript";
-import css from "highlight.js/lib/languages/css";
-import xml from "highlight.js/lib/languages/xml";
 
 import { dictionary } from "./utils";
+import { selectColumn, selectRow, selectTable } from "prosemirror-utils";
+import SelectionToolbar from "@/components/SelectionToolbar";
 
 export default {
   name: "App",
@@ -292,6 +280,7 @@ export default {
     EditorContent,
     EditorMenuBar,
     EditorMenuBubble,
+    SelectionToolbar,
   },
   data() {
     return {
@@ -304,15 +293,9 @@ export default {
           }),
           new Image(),
           new Blockquote(),
-          new CodeBlockHighlight({
-            languages: {
-              javascript,
-              css,
-              xml,
-            },
-          }),
+          new CodeBlock(),
           new Notice({
-            dictionary,
+            dictionary: this.dictionary,
           }),
           new ListItem(),
           new OrderedList(),
@@ -335,8 +318,13 @@ export default {
           new Table({
             resizable: true,
           }),
-          new TableHeader(),
-          new TableCell(),
+          new TableCell({
+            onSelectTable: this.handleSelectTable,
+            onSelectRow: this.handleSelectRow,
+          }),
+          new TableHeaderCell({
+            onSelectColumn: this.handleSelectColumn,
+          }),
           new TableRow(),
           new Code(),
           new Doc(),
@@ -353,6 +341,8 @@ export default {
       }),
       linkUrl: null,
       linkMenuIsActive: false,
+      selectionMenuOpen: false,
+      dictionary: dictionary,
     };
   },
   methods: {
@@ -423,6 +413,21 @@ export default {
         reader.readAsDataURL(image);
       });
     },
+    handleSelectRow(index, state) {
+      this.editor.view.dispatch(selectRow(index)(state.tr));
+    },
+    handleSelectColumn(index, state) {
+      this.editor.view.dispatch(selectColumn(index)(state.tr));
+    },
+    handleSelectTable(state) {
+      this.editor.view.dispatch(selectTable(state.tr));
+    },
+    handleOpenSelectionMenu() {
+      this.selectionMenuOpen = true;
+    },
+    handleCloseSelectionMenu() {
+      this.selectionMenuOpen = false;
+    },
   },
   beforeDestroy() {
     this.editor.destroy();
@@ -440,6 +445,11 @@ export default {
   margin-top: 60px;
 }
 
+p {
+  margin: 0;
+  padding: 0;
+}
+
 .editor-content {
   width: 666px;
   margin: auto;
@@ -448,7 +458,7 @@ export default {
 
 .editor {
   border: 2px solid #ddd;
-  padding: 10px;
+  padding: 40px;
   outline: none;
 }
 
@@ -543,64 +553,6 @@ button {
   font-weight: bolder;
 }
 
-/* 代码高亮 */
-pre {
-  &::before {
-    content: attr(data-language);
-    text-transform: uppercase;
-    display: block;
-    text-align: right;
-    font-weight: bold;
-    font-size: 0.6rem;
-  }
-  code {
-    .hljs-comment,
-    .hljs-quote {
-      color: #999999;
-    }
-    .hljs-variable,
-    .hljs-template-variable,
-    .hljs-attribute,
-    .hljs-tag,
-    .hljs-name,
-    .hljs-regexp,
-    .hljs-link,
-    .hljs-name,
-    .hljs-selector-id,
-    .hljs-selector-class {
-      color: #f2777a;
-    }
-    .hljs-number,
-    .hljs-meta,
-    .hljs-built_in,
-    .hljs-builtin-name,
-    .hljs-literal,
-    .hljs-type,
-    .hljs-params {
-      color: #f99157;
-    }
-    .hljs-string,
-    .hljs-symbol,
-    .hljs-bullet {
-      color: #99cc99;
-    }
-    .hljs-title,
-    .hljs-section {
-      color: #ffcc66;
-    }
-    .hljs-keyword,
-    .hljs-selector-tag {
-      color: #6699cc;
-    }
-    .hljs-emphasis {
-      font-style: italic;
-    }
-    .hljs-strong {
-      font-weight: 700;
-    }
-  }
-}
-
 .image-upload {
   position: absolute;
   z-index: -1;
@@ -611,41 +563,8 @@ pre {
   opacity: 0;
 }
 
-.notice-block {
-  background: rgb(247, 247, 247);
-  border-radius: 4px;
-  padding: 8px 16px;
-  margin: 8px 0;
-}
-
-.notice-block .icon {
-  width: 24px;
-  height: 24px;
-  align-self: flex-start;
-  margin-right: 4px;
-  position: relative;
-  top: 1px;
-}
-
-.notice-block.primary {
-  background: rgb(245, 240, 250);
-}
-
-.notice-block.success {
-  background: rgb(239, 248, 240);
-}
-
-.notice-block.info {
-  background: rgb(238, 247, 250);
-}
-
-.notice-block.warning {
-  background: rgb(253, 248, 234);
-}
-
-.notice-block.danger {
-  background: rgb(252, 241, 242);
-}
-
 @import "./assets/styles/main";
+@import "./assets/styles/table.scss";
+@import "./assets/styles/code.scss";
+@import "./assets/styles/note.scss";
 </style>
