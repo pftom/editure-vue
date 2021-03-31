@@ -188,10 +188,24 @@
             />
             <button
               class="menububble__button"
+              @click.prevent="setLinkUrl(commands.link, linkUrl)"
+              type="button"
+            >
+              <i class="el-icon-s-claim"></i>
+            </button>
+            <button
+              class="menububble__button"
               @click="setLinkUrl(commands.link, null)"
               type="button"
             >
-              remove
+              <i class="el-icon-delete"></i>
+            </button>
+            <button
+              class="menububble__button"
+              @click="handleOpenLink"
+              type="button"
+            >
+              <i class="el-icon-top-right"></i>
             </button>
           </form>
 
@@ -201,7 +215,7 @@
               @click="showLinkMenu(getMarkAttrs('link'))"
               :class="{ 'is-active': isActive.link() }"
             >
-              <span>{{ isActive.link() ? "Update Link" : "Add Link" }}</span>
+              <i class="el-icon-link"></i>
             </button>
           </template> -->
         </div>
@@ -297,7 +311,8 @@ export default {
           new Underline(),
           new Strike(),
           new Link({
-            onKeyboardShortcut: this.handleOpenLinkMenu,
+            onKeyboardShortcut: this.onKeyboardShortcut,
+            onClick: this.handleClickLink,
           }),
           new HardBreak(),
           new Table({
@@ -337,6 +352,19 @@ export default {
       } else if (!this.editor.isActive.image()) {
         this.handleOpenLinkMenu();
       }
+    },
+    handleOpenLink() {
+      const { href = "", target = "" } = this.editor.getMarkAttrs("link");
+      window.open(href, target);
+    },
+    handleClickLink() {
+      this.handleOpenLinkMenu();
+    },
+    onKeyboardShortcut() {
+      this.editor.commands.link({
+        href: "",
+      });
+      this.handleOpenLinkMenu();
     },
     handleOpenLinkMenu() {
       this.showLinkMenu(this.editor.getMarkAttrs("link"));

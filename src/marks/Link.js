@@ -1,6 +1,6 @@
-import { Mark, Plugin } from "tiptap";
-import { updateMark, removeMark, pasteRule, toggleMark } from "tiptap-commands";
-import { getMarkAttrs } from "tiptap-utils";
+import { Mark, Plugin, TextSelection } from "tiptap";
+import { updateMark, removeMark, pasteRule } from "tiptap-commands";
+import { getMarkRange } from "tiptap-utils";
 
 export default class Link extends Mark {
   get name() {
@@ -34,21 +34,27 @@ export default class Link extends Mark {
           }),
         },
       ],
-      toDOM: (node) => [
-        "a",
-        {
-          ...node.attrs,
-          rel: "noopener noreferrer nofollow",
-          target: node.attrs.target || this.options.target,
-        },
-        0,
-      ],
+      toDOM: (node) => {
+        return [
+          "a",
+          {
+            ...node.attrs,
+            rel: "noopener noreferrer nofollow",
+            target: node.attrs.target || this.options.target,
+          },
+          0,
+        ];
+      },
     };
   }
 
   commands({ type }) {
-    return ({ href } = { href: "" }) => {
-      return toggleMark(type, { href });
+    return (attrs) => {
+      if (typeof attrs?.href === "string") {
+        return updateMark(type, attrs);
+      }
+
+      return removeMark(type);
     };
   }
 
@@ -79,14 +85,24 @@ export default class Link extends Mark {
     return [
       new Plugin({
         props: {
-          handleClick: (view, pos, event) => {
-            const { schema } = view.state;
-            const attrs = getMarkAttrs(view.state, schema.marks.link);
+          handleClick: (view, pos) => {
+            const { schema, doc, tr } = view.state;
 
-            if (attrs.href && event.target instanceof HTMLAnchorElement) {
-              event.stopPropagation();
-              window.open(attrs.href, attrs.target);
-            }
+            const range = getMarkRange(doc.resolve(pos), schema.marks.link);
+
+            if (!range) return false;
+
+            const $start = doc.resolve(range.from);
+            const $end = doc.resolve(range.to);
+
+            const transaction = tr.setSelection(
+              new TextSelection($start, $end)
+            );
+
+            view.dispatch(transaction);
+
+            this.options.onClick();
+            return true;
           },
         },
       }),
