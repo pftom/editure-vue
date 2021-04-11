@@ -43,7 +43,7 @@ function isVisible(props) {
 }
 
 export default {
-  props: ["view", "commands"],
+  props: ["view", "commands", "onClose", "onOpen"],
   data() {
     return {
       isActive: false,
@@ -102,13 +102,13 @@ export default {
     if (this.isActive && !visible) {
       this.isActive = false;
 
-      this.$emit("onClose");
+      this.onClouse();
     }
 
     if (!this.isActive && visible) {
       this.isActive = true;
 
-      this.$emit("onOpen");
+      this.onOpen;
     }
   },
 };

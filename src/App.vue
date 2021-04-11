@@ -227,12 +227,22 @@
         :commands="editor.commands"
         :isActive="linkMenuIsActive"
         :dictionary="dictionary"
-        :on-open="handleOpenSelectionMenu"
-        :on-close="handleCloseSelectionMenu"
-        :on-click-link="onClickLink"
-        :on-create-link="onCreateLink"
-        :on-keyboard-shortcut="handleOpenLinkMenu"
+        :onOpen="handleOpenSelectionMenu"
+        :onClose="handleCloseSelectionMenu"
+        :onSearchLink="onSearchLink"
+        :onClickLink="onClickLink"
+        :onCreateLink="onCreateLink"
       ></selection-toolbar>
+      <link-toolbar
+        :view="view"
+        :dictionary="dictionary"
+        :isActive="linkMenuOpen"
+        :onCreateLink="onCreateLink"
+        :onSearchLink="onSearchLink"
+        :onClickLink="onClickLink"
+        :onShowToast="onShowToast"
+        :onClose="onClose"
+      ></link-toolbar>
     </div>
   </div>
 </template>
@@ -273,14 +283,19 @@ import { Link } from "./marks";
 import { dictionary } from "./utils";
 import { selectColumn, selectRow, selectTable } from "prosemirror-utils";
 import SelectionToolbar from "@/components/SelectionToolbar";
+import LinkToolbar from "@/components/LinkToolbar";
+import LinkToolbar from "./components/LinkToolbar.vue";
 
 export default {
   name: "App",
+  props: ["onCreateLink", "onSearchLink", "onClickLink", "onShowToast"],
   components: {
     EditorContent,
     EditorMenuBar,
     EditorMenuBubble,
     SelectionToolbar,
+    LinkToolbar,
+    LinkToolbar,
   },
   data() {
     return {
@@ -313,6 +328,8 @@ export default {
           new Link({
             onKeyboardShortcut: this.onKeyboardShortcut,
             onClick: this.handleClickLink,
+            onClickHashtag: this.onClickHashtag,
+            onHoverLink: this.onHoverLink,
           }),
           new HardBreak(),
           new Table({
@@ -428,6 +445,8 @@ export default {
     handleCloseSelectionMenu() {
       this.selectionMenuOpen = false;
     },
+    onClickHashtag() {},
+    onHoverLink() {},
   },
   beforeDestroy() {
     this.editor.destroy();
