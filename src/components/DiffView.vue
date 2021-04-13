@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import MonacoEditor from "vue-monaco";
+import MonacoEditor from "./MonacoEditor.vue";
 import { Switch } from "element-ui";
 
 export default {
