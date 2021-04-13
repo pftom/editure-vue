@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "start": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "commit": "git add . && git-cz",
+    "release": "standard-version"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
@@ -29,6 +31,7 @@
     "vue": "^2.6.11"
   },
   "devDependencies": {
+    "@commitlint/config-conventional": "^12.1.1",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
@@ -39,7 +42,15 @@
     "node-sass": "^5.0.0",
     "sass": "^1.32.8",
     "sass-loader": "10.1.1",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.6.11",
+    "@commitlint/cli": "^7.2.1",
+    "commitizen": "^3.0.5",
+    "conventional-changelog": "^3.0.5",
+    "cz-conventional-changelog": "^2.1.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "lint-staged": "^7.2.2",
+    "prettier": "^1.16.3",
+    "standard-version": "^4.4.0"
   },
   "eslintConfig": {
     "root": true,
@@ -55,6 +66,21 @@
     },
     "rules": {
       "no-unused-vars": "off"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "vue-cli-service lint",
+      "git add"
+    ],
+    "*.vue": [
+      "vue-cli-service lint",
+      "git add"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
     }
   },
   "browserslist": [
