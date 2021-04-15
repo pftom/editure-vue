@@ -45,6 +45,14 @@ Vue.use(Tooltip);
 Vue.use(Icon);
 Vue.config.productionTip = false;
 
+// 捕获 monaco 的 unhandledrejection
+window.addEventListener("unhandledrejection", function(event) {
+  if (event.reason && event.reason.name === "Canceled") {
+    // monaco editor promise cancelation
+    event.preventDefault();
+  }
+});
+
 new Vue({
   render: (h) => h(App),
 }).$mount("#app");

@@ -1,6 +1,7 @@
 .menubar {
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
   transition: visibility 0.2s 0.4s, opacity 0.2s 0.4s;
+  overflow: visible;
 
   &.is-hidden {
     visibility: hidden;
