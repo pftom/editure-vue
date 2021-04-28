@@ -1,6 +1,6 @@
 <template>
-  <div class="editor-content">
-    <div class="editor">
+  <div class="editure-content">
+    <div class="editure">
       <editor-menu-bar :editor="editor" v-slot="{ commands, isActive }">
         <div class="menubar">
           <button class="menubar__button" @click="commands.undo">
@@ -124,6 +124,10 @@
             @click="commands.code_block"
           >
             code-block
+          </button>
+
+          <button class="menubar__button" @click="commands.diff_block">
+            diff-block
           </button>
 
           <button
@@ -273,6 +277,7 @@ import {
   Image,
   Notice,
   CodeBlock,
+  DiffBlock,
   Table,
   TableHeaderCell,
   TableRow,
@@ -309,6 +314,7 @@ export default {
           new Image(),
           new Blockquote(),
           new CodeBlock(),
+          new DiffBlock(),
           new Notice({
             dictionary: this.dictionary,
           }),
@@ -469,19 +475,19 @@ p {
   padding: 0;
 }
 
-.editor-content {
-  width: 666px;
+.editure-content {
+  width: 1000px;
   margin: auto;
   padding-top: 40px;
 }
 
-.editor {
+.editure {
   border: 2px solid #ddd;
   padding: 40px;
   outline: none;
 }
 
-.editor .ProseMirror {
+.editure .ProseMirror {
   outline: none;
 }
 
@@ -489,7 +495,7 @@ p {
   margin-top: 1em;
 }
 
-.editor p.is-editor-empty:first-child::before {
+.editure p.is-editor-empty:first-child::before {
   content: attr(data-empty-text);
   float: left;
   color: #aaa;
@@ -498,8 +504,8 @@ p {
   font-style: italic;
 }
 
-.editor *.is-empty:nth-child(1)::before,
-.editor *.is-empty:nth-child(2)::before {
+.editure *.is-empty:nth-child(1)::before,
+.editure *.is-empty:nth-child(2)::before {
   content: attr(data-empty-text);
   float: left;
   color: #aaa;
@@ -508,7 +514,7 @@ p {
   font-style: italic;
 }
 
-.editor_content .ProseMirror {
+.editure-content .ProseMirror {
   padding: 10px;
 }
 
