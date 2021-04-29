@@ -1,6 +1,15 @@
 <template>
   <floating-toolbar :view="view" :active="visible">
-    <Menu :items="items" :view="view" :commands="commands"></Menu>
+    <link-editor
+      v-if="isLinkEditorActive"
+      :view="view"
+      :mark="range.mark"
+      :from="range.from"
+      :to="range.to"
+      :onCreateLink="onCreateLink ? handleOnCreateLink : undefined"
+      :onSelectLink="handleOnSelectLink"
+    ></link-editor>
+    <Menu v-else :items="items" :view="view" :commands="commands"></Menu>
   </floating-toolbar>
 </template>
 
@@ -20,6 +29,8 @@ import { dictionary } from "../utils";
 
 // 组件
 import FloatingToolbar from "./FloatingToolbar";
+import LinkEditor from "@/components/LinkEditor.vue";
+import createAndInsertLink from "../commands/createAndInsertLink";
 import Menu from "./Menu";
 
 import some from "lodash.some";
@@ -43,7 +54,7 @@ function isVisible(props) {
 }
 
 export default {
-  props: ["view", "commands", "onClose", "onOpen"],
+  props: ["view", "commands", "onClose", "onOpen", "onCreateLink"],
   data() {
     return {
       isActive: false,
@@ -52,10 +63,12 @@ export default {
   components: {
     FloatingToolbar,
     Menu,
+    LinkEditor,
   },
   computed: {
     items() {
       const { state } = this.view;
+
       const isCodeSelection = isNodeActive(state.schema.nodes.code_block)(
         state
       );
@@ -84,6 +97,21 @@ export default {
 
       return items;
     },
+    range() {
+      const { state } = this.view;
+      const { selection } = state;
+
+      const range = getMarkRange(selection.$from, state.schema.marks.link);
+
+      return range;
+    },
+    isLinkEditorActive() {
+      const { state } = this.view;
+
+      const link = isMarkActive(state.schema.marks.link)(state);
+
+      return link && this.range;
+    },
     // linkMenuVisible() {
     //   const link = isMarkActive(state.schema.marks.link)(state);
     //   const range = getMarkRange(selection.$from, state.schema.marks.link);
@@ -94,6 +122,47 @@ export default {
       return isVisible({ view: this.view });
     },
   },
+  methods: {
+    handleOnCreateLink(title) {
+      const { dictionary, onCreateLink, view, onShowToast } = this.$props;
+
+      if (!onCreateLink) {
+        return;
+      }
+
+      const { dispatch, state } = view;
+      const { from, to } = state.selection;
+
+      const href = `creating#${title}…`;
+      const markType = state.schema.marks.link;
+
+      // Insert a placeholder link
+      dispatch(
+        view.state.tr
+          .removeMark(from, to, markType)
+          .addMark(from, to, markType.create({ href }))
+      );
+
+      createAndInsertLink(view, title, href, {
+        onCreateLink,
+        onShowToast,
+        dictionary,
+      });
+    },
+
+    handleOnSelectLink({ href, from, to }) {
+      const { view } = this.$props;
+      const { state, dispatch } = view;
+
+      const markType = state.schema.marks.link;
+
+      dispatch(
+        state.tr
+          .removeMark(from, to, markType)
+          .addMark(from, to, markType.create({ href }))
+      );
+    },
+  },
   updated() {
     const visible = isVisible({
       view: this.view,
@@ -102,7 +171,7 @@ export default {
     if (this.isActive && !visible) {
       this.isActive = false;
 
-      this.onClouse();
+      this.onClose();
     }
 
     if (!this.isActive && visible) {

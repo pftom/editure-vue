@@ -238,14 +238,15 @@
         :onCreateLink="onCreateLink"
       ></selection-toolbar>
       <link-toolbar
-        :view="view"
+        v-if="editor"
+        :view="editor.view"
         :dictionary="dictionary"
         :isActive="linkMenuOpen"
         :onCreateLink="onCreateLink"
         :onSearchLink="onSearchLink"
         :onClickLink="onClickLink"
         :onShowToast="onShowToast"
-        :onClose="onClose"
+        :onClose="handleCloseLinkMenu"
       ></link-toolbar>
     </div>
   </div>
@@ -288,7 +289,6 @@ import { Link } from "./marks";
 import { dictionary } from "./utils";
 import { selectColumn, selectRow, selectTable } from "prosemirror-utils";
 import SelectionToolbar from "@/components/SelectionToolbar";
-import LinkToolbar from "@/components/LinkToolbar";
 import LinkToolbar from "./components/LinkToolbar.vue";
 
 export default {
@@ -299,7 +299,6 @@ export default {
     EditorMenuBar,
     EditorMenuBubble,
     SelectionToolbar,
-    LinkToolbar,
     LinkToolbar,
   },
   data() {
@@ -453,6 +452,9 @@ export default {
     },
     onClickHashtag() {},
     onHoverLink() {},
+    handleCloseLinkMenu() {
+      this.linkMenuOpen = false;
+    },
   },
   beforeDestroy() {
     this.editor.destroy();

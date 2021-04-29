@@ -1,3 +1,4 @@
+import { toggleMark } from "prosemirror-commands";
 import { Mark, Plugin, TextSelection } from "tiptap";
 import { updateMark, removeMark, pasteRule } from "tiptap-commands";
 import { getMarkRange } from "tiptap-utils";
@@ -50,11 +51,8 @@ export default class Link extends Mark {
 
   commands({ type }) {
     return (attrs) => {
-      if (typeof attrs?.href === "string") {
-        return updateMark(type, attrs);
-      }
-
-      return removeMark(type);
+      const href = attrs?.href || "";
+      return toggleMark(type, { href });
     };
   }
 

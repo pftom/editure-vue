@@ -1,5 +1,5 @@
 <template>
-  <floating-toolbar ref="menuRef" :active="active">
+  <floating-toolbar ref="menuRef" :view="view" :active="active">
     <link-editor
       v-if="active"
       :from="view.state.selection.from"
@@ -14,6 +14,20 @@
 <script>
 import LinkEditor from "@/components/LinkEditor.vue";
 import FloatingToolbar from "@/components/FloatingToolbar.vue";
+import createAndInsertLink from "../commands/createAndInsertLink";
+
+function isActive(props) {
+  const { view } = props;
+  console.log("view", view);
+  const { selection } = view.state;
+
+  try {
+    const paragraph = view.domAtPos(selection.from);
+    return props.isActive && !!paragraph.node;
+  } catch (err) {
+    return false;
+  }
+}
 
 export default {
   props: {
@@ -36,7 +50,7 @@ export default {
   },
   computed: {
     active() {
-      return this.isActive({
+      return isActive({
         view: this.view,
       });
     },
@@ -46,7 +60,7 @@ export default {
       if (
         event.target &&
         this.$refs.menuRef &&
-        this.$refs.menuRef.contains(event.target)
+        this.$refs.menuRef.$el.contains(event.target)
       ) {
         return;
       }
@@ -67,7 +81,7 @@ export default {
 
       // Insert a placeholder link
       dispatch(
-        view.state.tr
+        this.view.state.tr
           .insertText(title, from, to)
           .addMark(
             from,
@@ -76,7 +90,7 @@ export default {
           )
       );
 
-      createAndInsertLink(view, title, href, {
+      createAndInsertLink(this.view, title, href, {
         onCreateLink: this.onCreateLink,
         onShowToast: this.onShowToast,
         dictionary: this.dictionary,
@@ -86,11 +100,11 @@ export default {
       this.onClose();
       this.view.focus();
 
-      const { dispatch, state } = view;
+      const { dispatch, state } = this.view;
       const { from, to } = state.selection;
 
       dispatch(
-        view.state.tr
+        this.view.state.tr
           .insertText(title, from, to)
           .addMark(
             from,
@@ -98,17 +112,6 @@ export default {
             state.schema.marks.link.create({ href })
           )
       );
-    },
-    isActive(props) {
-      const { view } = props;
-      const { selection } = view.state;
-
-      try {
-        const paragraph = view.domAtPos(selection.from);
-        return props.isActive && !!paragraph.node;
-      } catch (err) {
-        return false;
-      }
     },
   },
   mounted() {

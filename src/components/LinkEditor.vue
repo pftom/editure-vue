@@ -5,7 +5,7 @@
       class="input"
       :value="value"
       :placeholder="placeholder"
-      :onKeyDown="handleKeyDown"
+      @keydown="handleKeyDown"
       @change="handleChange"
       :autofocus="href === ''"
     />
@@ -33,14 +33,14 @@ import isUrl from "@/utils/isUrl";
 import ToolbarButton from "@/components/ToolbarButton.vue";
 import CustomTooltip from "./Tooltip.vue";
 import dictionary from "@/utils/dictionary";
+import { setTextSelection } from "prosemirror-utils";
 
 export default {
   props: [
     "from",
     "to",
     "view",
-    "marks",
-    "dictionary",
+    "mark",
     "onSelectLink",
     "onCreateLink",
     "onSearchLink",
@@ -56,10 +56,11 @@ export default {
       selectedIndex: -1,
       previousValue: "",
       results: {},
-      value: this.marks ? this.marks.attrs.href : "",
-      initialValue: this.marks ? this.marks.attrs.href : "",
+      value: this.mark ? this.mark.attrs.href : "",
+      initialValue: this.mark ? this.mark.attrs.href : "",
       initialSelectionLength: this.to - this.from,
       discardInputValue: false,
+      dictionary,
     };
   },
   computed: {
@@ -87,15 +88,26 @@ export default {
       const suggestedLinkTitle = this.suggestedLinkTitle;
 
       const showCreateLink =
-        !!this.props.onCreateLink &&
+        !!this.$props.onCreateLink &&
         !(suggestedLinkTitle === this.initialValue) &&
         suggestedLinkTitle.length > 0 &&
         !looksLikeUrl;
 
-      const showResults =
-        !!suggestedLinkTitle && (showCreateLink || results.length > 0);
-
       return showCreateLink;
+    },
+    showResults() {
+      const value = this.value;
+      const results =
+        this.results[value.trim()] || this.results[this.previousValue] || [];
+
+      const showResults =
+        !!this.suggestedLinkTitle &&
+        (this.showCreateLink || results.length > 0);
+
+      return showResults;
+    },
+    href() {
+      return this.$props?.mark ? this.$props?.mark.attrs.href : "";
     },
   },
   beforeDestroy() {
@@ -124,7 +136,7 @@ export default {
       if (href.length === 0) return;
 
       this.discardInputValue = true;
-      const { from, to } = this.props;
+      const { from, to } = this.$props;
 
       // If the input doesn't start with a protocol or relative slash, make sure
       // a protocol is added to the beginning
@@ -135,6 +147,7 @@ export default {
       this.onSelectLink({ href, title, from, to });
     },
     handleKeyDown(event) {
+      console.log("event", event.key, event);
       switch (event.key) {
         case "Enter": {
           event.preventDefault();
@@ -245,7 +258,7 @@ export default {
 
       const { state, dispatch } = this.view;
 
-      if (mark) {
+      if (this.mark) {
         dispatch(state.tr.removeMark(this.from, this.to, this.mark));
       }
 
@@ -272,6 +285,9 @@ export default {
       dispatch(setTextSelection(this.to)(state.tr));
       this.view.focus();
     },
+  },
+  mounted() {
+    console.log("props", this.$props);
   },
 };
 </script>

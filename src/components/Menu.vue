@@ -33,7 +33,7 @@ export default {
   props: ["view", "items", "commands"],
   methods: {
     handleClick(item) {
-      console.log("item", item);
+      console.log("item", item, this.commands);
       return item.name && this.commands[item.name](item.attrs);
     },
   },
