@@ -1,13 +1,13 @@
 <template>
   <div class="link-editor">
     <input
+      ref="linkInput"
       type="text"
       class="input"
       :value="value"
       :placeholder="placeholder"
       @keydown="handleKeyDown"
       @change="handleChange"
-      :autofocus="href === ''"
     />
 
     <toolbar-button @click="handleOpenLink" :disabled="!value">
@@ -287,7 +287,9 @@ export default {
     },
   },
   mounted() {
-    console.log("props", this.$props);
+    if (this.$refs.linkInput) {
+      this.$refs.linkInput.focus();
+    }
   },
 };
 </script>

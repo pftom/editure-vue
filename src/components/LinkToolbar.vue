@@ -18,7 +18,6 @@ import createAndInsertLink from "../commands/createAndInsertLink";
 
 function isActive(props) {
   const { view } = props;
-  console.log("view", view);
   const { selection } = view.state;
 
   try {
