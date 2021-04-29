@@ -8,6 +8,7 @@
       :to="range.to"
       :onCreateLink="onCreateLink ? handleOnCreateLink : undefined"
       :onSelectLink="handleOnSelectLink"
+      :onClickLink="onClickLink"
     ></link-editor>
     <Menu v-else :items="items" :view="view" :commands="commands"></Menu>
   </floating-toolbar>
@@ -54,7 +55,14 @@ function isVisible(props) {
 }
 
 export default {
-  props: ["view", "commands", "onClose", "onOpen", "onCreateLink"],
+  props: [
+    "view",
+    "commands",
+    "onClose",
+    "onOpen",
+    "onCreateLink",
+    "onClickLink",
+  ],
   data() {
     return {
       isActive: false,

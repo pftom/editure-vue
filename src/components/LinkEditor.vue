@@ -10,13 +10,13 @@
       @change="handleChange"
     />
 
-    <toolbar-button @click="handleOpenLink" :disabled="!value">
+    <toolbar-button @click.native="handleOpenLink" :disabled="!value">
       <custom-tooltip :tooltip="dictionary.openLink" placement="top">
         打开
       </custom-tooltip>
     </toolbar-button>
 
-    <toolbar-button @click="handleRemoveLink">
+    <toolbar-button @click.native="handleRemoveLink">
       <custom-tooltip :tooltip="dictionary.removeLink" placement="top">
         {{ initialValue ? "删除" : "关闭" }}
       </custom-tooltip>
@@ -147,7 +147,6 @@ export default {
       this.onSelectLink({ href, title, from, to });
     },
     handleKeyDown(event) {
-      console.log("event", event.key, event);
       switch (event.key) {
         case "Enter": {
           event.preventDefault();
@@ -258,6 +257,7 @@ export default {
 
       const { state, dispatch } = this.view;
 
+      console.log("remove", this.mark);
       if (this.mark) {
         dispatch(state.tr.removeMark(this.from, this.to, this.mark));
       }

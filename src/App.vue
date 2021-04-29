@@ -293,7 +293,7 @@ import LinkToolbar from "./components/LinkToolbar.vue";
 
 export default {
   name: "App",
-  props: ["onCreateLink", "onSearchLink", "onClickLink", "onShowToast"],
+  props: ["onCreateLink", "onSearchLink", "onShowToast"],
   components: {
     EditorContent,
     EditorMenuBar,
@@ -454,6 +454,9 @@ export default {
     onHoverLink() {},
     handleCloseLinkMenu() {
       this.linkMenuOpen = false;
+    },
+    onClickLink(href) {
+      window.open(href, "_blank");
     },
   },
   beforeDestroy() {
