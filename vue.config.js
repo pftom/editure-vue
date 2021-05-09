@@ -7,6 +7,7 @@ function resolve(dir) {
 
 module.exports = {
   configureWebpack: {
+    devtool: "source-map",
     resolve: {
       extensions: [".js", ".vue", ".json", ".ts"],
       alias: {

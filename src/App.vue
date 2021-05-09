@@ -142,7 +142,7 @@
             <input
               type="file"
               ref="image"
-              @change="handleImageUpload"
+              @change="handleImagePicked"
               class="image-upload"
             />
             <span @click="clickImageButton">image</span>
@@ -287,13 +287,20 @@ import {
 import { Link } from "./marks";
 
 import { dictionary } from "./utils";
-import { selectColumn, selectRow, selectTable } from "prosemirror-utils";
+import {
+  selectColumn,
+  selectRow,
+  selectTable,
+  findParentNode,
+} from "prosemirror-utils";
 import SelectionToolbar from "@/components/SelectionToolbar";
 import LinkToolbar from "./components/LinkToolbar.vue";
+import getDataTransferFiles from "./lib/getDataTransferFiles";
+import insertFiles from "@/commands/insertFiles";
 
 export default {
   name: "App",
-  props: ["onCreateLink", "onSearchLink", "onShowToast"],
+  props: ["onCreateLink", "onSearchLink", "onShowToast", "onClose"],
   components: {
     EditorContent,
     EditorMenuBar,
@@ -310,7 +317,13 @@ export default {
           new Heading({
             levels: [1, 2, 3, 4],
           }),
-          new Image(),
+          new Image({
+            dictionary,
+            uploadImage: this.uploadImage,
+            onImageUploadStart: this.onImageUploadStart,
+            onImageUploadStop: this.onImageUploadStop,
+            onShowToast: this.onShowToast,
+          }),
           new Blockquote(),
           new CodeBlock(),
           new DiffBlock(),
@@ -411,30 +424,55 @@ export default {
 
       this.$refs.image.click();
     },
-    handleImageUpload(e) {
-      const files = e.target.files;
-      const images = Array.from(files).filter((file) =>
-        /image/i.test(file.type)
-      );
+    uploadImage(file) {
+      if (!file) return;
 
-      if (images.length === 0) {
-        return;
-      }
-
-      e.preventDefault();
-
-      images.forEach((image) => {
+      return new Promise((resolve) => {
         const reader = new FileReader();
 
         reader.onload = (readerEvent) => {
           const src = readerEvent.target.result;
 
-          this.editor.commands.image({ src });
+          resolve(src);
         };
 
-        reader.readAsDataURL(image);
+        reader.readAsDataURL(file);
       });
     },
+    handleImagePicked(event) {
+      const files = getDataTransferFiles(event);
+
+      const { view } = this.editor;
+      const { state, dispatch } = view;
+      const parent = findParentNode((node) => !!node)(state.selection);
+
+      if (parent) {
+        dispatch(
+          state.tr.insertText(
+            "",
+            parent.pos,
+            parent.pos + parent.node.textContent.length + 1
+          )
+        );
+
+        insertFiles(view, event, parent.pos, files, {
+          uploadImage: this.uploadImage,
+          onImageUploadStart: this.onImageUploadStart,
+          onImageUploadStop: this.onImageUploadStop,
+          onShowToast: this.onShowToast,
+          dictionary: dictionary,
+        });
+      }
+
+      if (this.$refs.image.$el) {
+        this.$refs.image.$el.value = "";
+      }
+
+      // 后续引入类似 gitbook 那样子的菜单栏才使用这里
+      // this.handleCloseBlockMenu();
+    },
+    onImageUploadStart(e) {},
+    onImageUploadStop(e) {},
     handleSelectRow(index, state) {
       this.editor.view.dispatch(selectRow(index)(state.tr));
     },

@@ -29,7 +29,7 @@ const base = {
   deleteImage: "Delete image",
   alignImageLeft: "Float left half width",
   alignImageRight: "Float right half width",
-  alignImageDefault: "Center large",
+  alignImageCenter: "Center large",
   em: "Italic",
   embedInvalidLink: "Sorry, that link won’t work for this embed type",
   findOrCreateDoc: "Find or create a doc…",

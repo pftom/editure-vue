@@ -26,6 +26,7 @@ import getTableMenuItems from "../menus/table";
 import getTableColMenuItems from "../menus/tableCol";
 import getTableRowMenuItems from "../menus/tableRow";
 import getFormattingMenuItems from "../menus/formatting";
+import getImageMenuItems from "../menus/image";
 import { dictionary } from "../utils";
 
 // 组件
@@ -76,6 +77,7 @@ export default {
   computed: {
     items() {
       const { state } = this.view;
+      const { selection } = state;
 
       const isCodeSelection = isNodeActive(state.schema.nodes.code_block)(
         state
@@ -90,6 +92,8 @@ export default {
       const rowIndex = getRowIndex(state.selection);
 
       const isTableSelection = colIndex !== undefined && rowIndex !== undefined;
+      const isImageSelection =
+        selection.node && selection.node.type.name === "image";
 
       let items = [];
       // TODO: formatting/link/image 相关的选中弹窗
@@ -99,6 +103,8 @@ export default {
         items = getTableColMenuItems(state, colIndex, dictionary);
       } else if (rowIndex !== undefined) {
         items = getTableRowMenuItems(state, rowIndex, dictionary);
+      } else if (isImageSelection) {
+        items = getImageMenuItems(state, dictionary);
       } else {
         items = getFormattingMenuItems(state, dictionary);
       }
