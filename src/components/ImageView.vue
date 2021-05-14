@@ -1,21 +1,21 @@
 <template>
-  <span :class="imageViewClass">
+  <div :class="className" :contenteditable="false" >
     <div
       :class="{
         'image-view__body--focused': selected,
         'image-view__body--resizing': resizing,
       }"
       class="image-view__body"
+      @click.prevent="selectImage"
     >
       <img
-        :src="src"
-        :title="node.attrs.title"
-        :alt="node.attrs.alt"
-        :width="width"
-        :height="height"
-        class="image-view__body__image"
-        @click="selectImage"
-      />
+          :src="src"
+          :title="title"
+          :alt="alt"
+          :width="width"
+          :height="height"
+          class="image-view__body__image"
+        />
 
       <div
         v-if="view.editable"
@@ -30,40 +30,21 @@
           @mousedown.stop.prevent="onMouseDown($event, direction)"
         />
       </div>
-
-      <el-popover
-        :value="selected"
-        ref="popover1"
-        placement="top"
-        width="200"
-        trigger="manual"
-      >
-        <el-row>
-          <el-tooltip effect="dark" content="更换图片" placement="top">
-            <el-button
-              size="mini"
-              icon="el-icon-edit-outline"
-              @click="clickImageButton"
-            ></el-button>
-          </el-tooltip>
-          <el-tooltip effect="dark" content="删除" placement="top">
-            <el-button
-              size="mini"
-              icon="el-icon-delete"
-              @click="removeImage"
-            ></el-button>
-          </el-tooltip>
-        </el-row>
-        <div slot="reference" class="image-view__body__placeholder" />
-      </el-popover>
     </div>
-    <input
+    <p
+      class="image-caption"
+      @keydown="handleKeyDown"
+      @blur="handleBlur"
+      :tabindex="-1"
+      :contenteditable="true"
+    >{{ alt }}</p>
+    <!-- <input
       type="file"
       ref="image"
       @change="handleImageUpload"
       class="image-upload"
-    />
-  </span>
+    /> -->
+  </div>
 </template>
 
 <script>
@@ -71,14 +52,20 @@ import { ResizeObserver } from "@juggle/resize-observer";
 import { resolveImg, RESIZE_DIRECTION } from "../utils/image";
 import { NodeSelection } from "prosemirror-state";
 import { deleteSelection } from "prosemirror-commands";
-import { Popover } from "element-ui";
+import mediumZoom from "medium-zoom";
 import { clamp } from "../utils/shared";
+import { setTextSelection } from "prosemirror-utils";
 
 export default {
-  props: ["node", "updateAttrs", "view", "getPos", "selected", "editor"],
-  components: {
-    [Popover.name]: Popover,
-  },
+  props: [
+    "node",
+    "updateAttrs",
+    "view",
+    "getPos",
+    "selected",
+    "editor",
+    "handleSelect",
+  ],
   data() {
     return {
       maxSize: {
@@ -110,6 +97,12 @@ export default {
     src() {
       return this.node.attrs.src;
     },
+    alt() {
+      return this.node.attrs.alt;
+    },
+    title() {
+      return this.node.attrs.title;
+    },
     width() {
       return this.node.attrs.width;
     },
@@ -122,7 +115,15 @@ export default {
       });
     },
     imageViewClass() {
-      return ["image-view"];
+      return [""];
+    },
+    className() {
+      const { layoutClass } = this.node.attrs;
+      const className = layoutClass
+        ? `image-view image image-${layoutClass}`
+        : "image-view image";
+
+      return className;
     },
   },
   async created() {
@@ -140,6 +141,12 @@ export default {
   },
   mounted() {
     this.resizeObj.observe(this.view.dom);
+
+    // 之后再优化
+    const image  = document.querySelector('.data-zommable');
+    mediumZoom(image, {
+      background: "#FFF",
+    });
   },
   beforeDestroy() {
     this.resizeObj.disconnect();
@@ -151,13 +158,11 @@ export default {
     },
     selectImage() {
       // https://github.com/ueberdosis/tiptap/issues/361
-      const { state } = this.view;
-      let { tr } = state;
+      
+      const $pos = this.view.state.doc.resolve(this.getPos());
+      const transaction = this.view.state.tr.setSelection(new NodeSelection($pos));
 
-      const selection = NodeSelection.create(state.doc, this.getPos());
-      tr = tr.setSelection(selection);
-
-      this.view.dispatch(tr);
+      this.view.dispatch(transaction);
     },
     onMouseDown(e, dir) {
       this.resizerState.x = e.clientX;
@@ -277,6 +282,57 @@ export default {
         reader.readAsDataURL(image);
       });
     },
+    handleKeyDown(event) {
+      console.log('keydown', event)
+
+      // Pressing Enter in the caption field should move the cursor/selection
+      // below the image
+      if (event.key === "Enter") {
+        event.preventDefault();
+
+        const { view } = this.editor;
+        const pos = this.getPos() + this.node.nodeSize;
+
+        console.log('pos', this.node)
+        view.focus();
+        view.dispatch(setTextSelection(pos)(view.state.tr));
+
+        return;
+      }
+
+      // Pressing Backspace in an an empty caption field should remove the entire
+      // image, leaving an empty paragraph
+      if (event.key === "Backspace" && event.target.innerText === "") {
+        const { view } = this.editor;
+        const $pos = view.state.doc.resolve(this.getPos());
+        const tr = view.state.tr.setSelection(new NodeSelection($pos));
+        view.dispatch(tr.deleteSelection());
+        view.focus();
+        return;
+      }
+    },
+    handleBlur(event) {
+      const node = this.node;
+      const getPos = this.getPos;
+
+      const alt = event.target.innerText;
+      const { src, title, layoutClass } = node.attrs;
+
+      if (alt === node.attrs.alt) return;
+
+      const { view } = this.editor;
+      const { tr } = view.state;
+
+      // update meta on object
+      const pos = getPos();
+      const transaction = tr.setNodeMarkup(pos, undefined, {
+        src,
+        alt,
+        title,
+        layoutClass,
+      });
+      view.dispatch(transaction);
+    },
   },
 };
 </script>
@@ -285,4 +341,77 @@ export default {
 .image-focused {
   outline: 2px solid #8cf;
 }
+
+.image-wrapper {
+  line-height: 0;
+  display: inline-block;
+}
+
+.image-caption {
+  border: 0;
+  display: block;
+  font-size: 13px;
+  font-style: italic;
+  color: #4e5c6e;
+  padding: 2px 0;
+  line-height: 16px;
+  text-align: center;
+  min-height: 1em;
+  outline: none;
+  background: none;
+  resize: none;
+  user-select: text;
+  cursor: text;
+
+  &:empty:before {
+    color: #b1becc;
+    content: "Write a caption";
+    pointer-events: none;
+  }
+}
+
+.ProseMirror[contenteditable="false"] {
+    .caption {
+      pointer-events: none;
+    }
+    .caption:empty {
+      visibility: hidden;
+    }
+  }
+
+ .image {
+    text-align: center;
+    max-width: 100%;
+    clear: both;
+
+    img {
+      display: inline-block;
+      max-width: 100%;
+      max-height: 75vh;
+    }
+  }
+
+  .image.placeholder {
+    position: relative;
+    background: #FFF;
+    img {
+      opacity: 0.5;
+    }
+  }
+
+  .image-right-50 {
+    float: right;
+    width: 50%;
+    margin-left: 2em;
+    margin-bottom: 1em;
+    clear: initial;
+  }
+
+  .image-left-50 {
+    float: left;
+    width: 50%;
+    margin-right: 2em;
+    margin-bottom: 1em;
+    clear: initial;
+  }
 </style>

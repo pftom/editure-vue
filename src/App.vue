@@ -142,7 +142,7 @@
             <input
               type="file"
               ref="image"
-              @change="handleImageUpload"
+              @change="handleImagePicked"
               class="image-upload"
             />
             <span @click="clickImageButton">image</span>
@@ -231,12 +231,23 @@
         :commands="editor.commands"
         :isActive="linkMenuIsActive"
         :dictionary="dictionary"
-        :on-open="handleOpenSelectionMenu"
-        :on-close="handleCloseSelectionMenu"
-        :on-click-link="onClickLink"
-        :on-create-link="onCreateLink"
-        :on-keyboard-shortcut="handleOpenLinkMenu"
+        :onOpen="handleOpenSelectionMenu"
+        :onClose="handleCloseSelectionMenu"
+        :onSearchLink="onSearchLink"
+        :onClickLink="onClickLink"
+        :onCreateLink="onCreateLink"
       ></selection-toolbar>
+      <link-toolbar
+        v-if="editor"
+        :view="editor.view"
+        :dictionary="dictionary"
+        :isActive="linkMenuOpen"
+        :onCreateLink="onCreateLink"
+        :onSearchLink="onSearchLink"
+        :onClickLink="onClickLink"
+        :onShowToast="onShowToast"
+        :onClose="handleCloseLinkMenu"
+      ></link-toolbar>
     </div>
   </div>
 </template>
@@ -276,16 +287,26 @@ import {
 import { Link } from "./marks";
 
 import { dictionary } from "./utils";
-import { selectColumn, selectRow, selectTable } from "prosemirror-utils";
+import {
+  selectColumn,
+  selectRow,
+  selectTable,
+  findParentNode,
+} from "prosemirror-utils";
 import SelectionToolbar from "@/components/SelectionToolbar";
+import LinkToolbar from "./components/LinkToolbar.vue";
+import getDataTransferFiles from "./lib/getDataTransferFiles";
+import insertFiles from "@/commands/insertFiles";
 
 export default {
   name: "App",
+  props: ["onCreateLink", "onSearchLink", "onShowToast", "onClose"],
   components: {
     EditorContent,
     EditorMenuBar,
     EditorMenuBubble,
     SelectionToolbar,
+    LinkToolbar,
   },
   data() {
     return {
@@ -296,7 +317,13 @@ export default {
           new Heading({
             levels: [1, 2, 3, 4],
           }),
-          new Image(),
+          new Image({
+            dictionary,
+            uploadImage: this.uploadImage,
+            onImageUploadStart: this.onImageUploadStart,
+            onImageUploadStop: this.onImageUploadStop,
+            onShowToast: this.onShowToast,
+          }),
           new Blockquote(),
           new CodeBlock(),
           new DiffBlock(),
@@ -319,6 +346,8 @@ export default {
           new Link({
             onKeyboardShortcut: this.onKeyboardShortcut,
             onClick: this.handleClickLink,
+            onClickHashtag: this.onClickHashtag,
+            onHoverLink: this.onHoverLink,
           }),
           new HardBreak(),
           new Table({
@@ -395,30 +424,55 @@ export default {
 
       this.$refs.image.click();
     },
-    handleImageUpload(e) {
-      const files = e.target.files;
-      const images = Array.from(files).filter((file) =>
-        /image/i.test(file.type)
-      );
+    uploadImage(file) {
+      if (!file) return;
 
-      if (images.length === 0) {
-        return;
-      }
-
-      e.preventDefault();
-
-      images.forEach((image) => {
+      return new Promise((resolve) => {
         const reader = new FileReader();
 
         reader.onload = (readerEvent) => {
           const src = readerEvent.target.result;
 
-          this.editor.commands.image({ src });
+          resolve(src);
         };
 
-        reader.readAsDataURL(image);
+        reader.readAsDataURL(file);
       });
     },
+    handleImagePicked(event) {
+      const files = getDataTransferFiles(event);
+
+      const { view } = this.editor;
+      const { state, dispatch } = view;
+      const parent = findParentNode((node) => !!node)(state.selection);
+
+      if (parent) {
+        dispatch(
+          state.tr.insertText(
+            "",
+            parent.pos,
+            parent.pos + parent.node.textContent.length + 1
+          )
+        );
+
+        insertFiles(view, event, parent.pos, files, {
+          uploadImage: this.uploadImage,
+          onImageUploadStart: this.onImageUploadStart,
+          onImageUploadStop: this.onImageUploadStop,
+          onShowToast: this.onShowToast,
+          dictionary: dictionary,
+        });
+      }
+
+      if (this.$refs.image.$el) {
+        this.$refs.image.$el.value = "";
+      }
+
+      // 后续引入类似 gitbook 那样子的菜单栏才使用这里
+      // this.handleCloseBlockMenu();
+    },
+    onImageUploadStart(e) {},
+    onImageUploadStop(e) {},
     handleSelectRow(index, state) {
       this.editor.view.dispatch(selectRow(index)(state.tr));
     },
@@ -433,6 +487,14 @@ export default {
     },
     handleCloseSelectionMenu() {
       this.selectionMenuOpen = false;
+    },
+    onClickHashtag() {},
+    onHoverLink() {},
+    handleCloseLinkMenu() {
+      this.linkMenuOpen = false;
+    },
+    onClickLink(href) {
+      window.open(href, "_blank");
     },
   },
   beforeDestroy() {

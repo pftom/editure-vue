@@ -1,6 +1,10 @@
-import { Node, Plugin } from "tiptap";
-import { nodeInputRule } from "tiptap-commands";
+import { Node, Plugin, NodeSelection } from "tiptap";
+
+import { InputRule } from "prosemirror-inputrules";
+import uploadPlaceholderPlugin from "../lib/uploadPlaceholder";
 import ImageView from "../components/ImageView.vue";
+import insertFiles from "../commands/insertFiles";
+import getDataTransferFiles from "../lib/getDataTransferFiles";
 import { DEFAULT_IMAGE_WIDTH } from "../utils/constants";
 
 /**
@@ -11,7 +15,85 @@ import { DEFAULT_IMAGE_WIDTH } from "../utils/constants";
  * ![](image.jpg "Ipsum") -> [, "", "image.jpg", "Ipsum"]
  * ![Lorem](image.jpg "Ipsum") -> [, "Lorem", "image.jpg", "Ipsum"]
  */
-const IMAGE_INPUT_REGEX = /!\[(.+|:?)]\((\S+)(?:(?:\s+)["'](\S+)["'])?\)/;
+const IMAGE_INPUT_REGEX = /!\[(?<alt>.*?)]\((?<filename>.*?)(?=\“|\))\“?(?<layoutclass>[^\”]+)?\”?\)/;
+
+const IMAGE_CLASSES = ["right-50", "left-50"];
+const getLayoutAndTitle = (tokenTitle) => {
+  if (!tokenTitle) return {};
+  if (IMAGE_CLASSES.includes(tokenTitle)) {
+    return {
+      layoutClass: tokenTitle,
+    };
+  } else {
+    return {
+      title: tokenTitle,
+    };
+  }
+};
+
+const uploadPlugin = (options) =>
+  new Plugin({
+    props: {
+      handleDOMEvents: {
+        paste(view, event) {
+          if (
+            (view.props.editable && !view.props.editable(view.state)) ||
+            !options.uploadImage
+          ) {
+            return false;
+          }
+
+          if (!event.clipboardData) return false;
+
+          // check if we actually pasted any files
+          const files = Array.prototype.slice
+            .call(event.clipboardData.items)
+            .map((dt) => dt.getAsFile())
+            .filter((file) => file);
+
+          if (files.length === 0) return false;
+
+          const { tr } = view.state;
+          if (!tr.selection.empty) {
+            tr.deleteSelection();
+          }
+          const pos = tr.selection.from;
+
+          insertFiles(view, event, pos, files, options);
+          return true;
+        },
+        drop(view, event) {
+          if (
+            (view.props.editable && !view.props.editable(view.state)) ||
+            !options.uploadImage
+          ) {
+            return false;
+          }
+
+          // filter to only include image files
+          const files = getDataTransferFiles(event).filter((file) =>
+            /image/i.test(file.type)
+          );
+          if (files.length === 0) {
+            return false;
+          }
+
+          // grab the position in the document for the cursor
+          const result = view.posAtCoords({
+            left: event.clientX,
+            top: event.clientY,
+          });
+
+          if (result) {
+            insertFiles(view, event, result.pos, files, options);
+            return true;
+          }
+
+          return false;
+        },
+      },
+    },
+  });
 
 export default class Image extends Node {
   get defaultOptions() {
@@ -28,14 +110,15 @@ export default class Image extends Node {
     return {
       inline: true,
       attrs: {
-        src: {
-          default: "",
-        },
+        src: {},
         alt: {
-          default: "",
+          default: null,
+        },
+        layoutClass: {
+          default: null,
         },
         title: {
-          default: "",
+          default: null,
         },
         width: {
           default: null,
@@ -44,51 +127,129 @@ export default class Image extends Node {
           default: null,
         },
       },
+      content: "text*",
+      marks: "",
       group: "inline",
       draggable: true,
+      selectable: true,
       parseDOM: [
         {
-          tag: "img[src]",
+          tag: "div[class~=image]",
           getAttrs: (dom) => {
-            let { width, height } = dom.style;
-            width = width || dom.getAttribute("width") || null;
-            height = height || dom.getAttribute("height") || null;
+            const img = dom.getElementsByTagName("img")[0];
+
+            const className = dom.className;
+            const layoutClassMatched =
+              className && className.match(/image-(.*)$/);
+            const layoutClass = layoutClassMatched
+              ? layoutClassMatched[1]
+              : null;
+
+            let { width, height } = img.style;
+            width = width || img.getAttribute("width") || null;
+            height = height || img.getAttribute("height") || null;
 
             return {
-              src: dom.getAttribute("src") || "",
-              title: dom.getAttribute("title") || "",
-              alt: dom.getAttribute("alt") || "",
+              src: img.getAttribute("src"),
+              title: img.getAttribute("title"),
+              alt: img.getAttribute("alt"),
               width: width == null ? null : parseInt(width, 10),
               height: height == null ? null : parseInt(height, 10),
+              layoutClass,
             };
           },
         },
       ],
-      toDOM: (node) => ["img", node.attrs],
+      toDOM: (node) => {
+        const className = node.attrs.layoutClass
+          ? `image image-${node.attrs.layoutClass}`
+          : "image";
+
+        return [
+          "div",
+          {
+            class: className,
+          },
+          ["img", { ...node.attrs, contentEditable: false }],
+          ["p", { class: "caption" }, 0],
+        ];
+      },
     };
   }
 
   commands({ type }) {
-    return (attrs) => (state, dispatch) => {
-      const { selection } = state;
-      const position = selection.$cursor
-        ? selection.$cursor.pos
-        : selection.$to.pos;
-      const node = type.create(attrs);
-      const transaction = state.tr.insert(position, node);
-      dispatch(transaction);
+    return {
+      deleteImage: () => (state, dispatch) => {
+        dispatch(state.tr.deleteSelection());
+        return true;
+      },
+      alignRight: () => (state, dispatch) => {
+        const attrs = {
+          ...state.selection.node.attrs,
+          title: null,
+          layoutClass: "right-50",
+        };
+        const { selection } = state;
+        dispatch(state.tr.setNodeMarkup(selection.$from.pos, undefined, attrs));
+        return true;
+      },
+      alignLeft: () => (state, dispatch) => {
+        const attrs = {
+          ...state.selection.node.attrs,
+          title: null,
+          layoutClass: "left-50",
+        };
+        const { selection } = state;
+        dispatch(state.tr.setNodeMarkup(selection.$from.pos, undefined, attrs));
+        return true;
+      },
+      alignCenter: () => (state, dispatch) => {
+        const attrs = { ...state.selection.node.attrs, layoutClass: null };
+        const { selection } = state;
+        dispatch(state.tr.setNodeMarkup(selection.$from.pos, undefined, attrs));
+        return true;
+      },
+      createImage: (attrs) => (state, dispatch) => {
+        const { selection } = state;
+        const position = selection.$cursor
+          ? selection.$cursor.pos
+          : selection.$to.pos;
+        const node = type.create(attrs);
+        const transaction = state.tr.insert(position, node);
+        dispatch(transaction);
+
+        return true;
+      },
     };
   }
 
+  handleSelect = ({ getPos }) => (event) => {
+    event.preventDefault();
+
+    const { view } = this.editor;
+    const $pos = view.state.doc.resolve(getPos());
+    const transaction = view.state.tr.setSelection(new NodeSelection($pos));
+    view.dispatch(transaction);
+  };
+
   inputRules({ type }) {
     return [
-      nodeInputRule(IMAGE_INPUT_REGEX, type, (match) => {
-        const [, alt, src, title] = match;
-        return {
-          src,
-          alt,
-          title,
-        };
+      new InputRule(IMAGE_INPUT_REGEX, (state, match, start, end) => {
+        const [okay, alt, src, matchedTitle] = match;
+        const { tr } = state;
+        if (okay) {
+          tr.replaceWith(
+            start - 1,
+            end,
+            type.create({
+              src,
+              alt,
+              ...getLayoutAndTitle(matchedTitle),
+            })
+          );
+        }
+
+        return tr;
       }),
     ];
   }
@@ -98,55 +259,6 @@ export default class Image extends Node {
   }
 
   get plugins() {
-    return [
-      new Plugin({
-        props: {
-          handleDOMEvents: {
-            drop(view, event) {
-              const hasFiles =
-                event.dataTransfer &&
-                event.dataTransfer.files &&
-                event.dataTransfer.files.length;
-
-              if (!hasFiles) {
-                return;
-              }
-
-              const images = Array.from(
-                event.dataTransfer.files
-              ).filter((file) => /image/i.test(file.type));
-
-              if (images.length === 0) {
-                return;
-              }
-
-              event.preventDefault();
-
-              const { schema } = view.state;
-              const coordinates = view.posAtCoords({
-                left: event.clientX,
-                top: event.clientY,
-              });
-
-              images.forEach((image) => {
-                const reader = new FileReader();
-
-                reader.onload = (readerEvent) => {
-                  const node = schema.nodes.image.create({
-                    src: readerEvent.target.result,
-                  });
-                  const transaction = view.state.tr.insert(
-                    coordinates.pos,
-                    node
-                  );
-                  view.dispatch(transaction);
-                };
-                reader.readAsDataURL(image);
-              });
-            },
-          },
-        },
-      }),
-    ];
+    return [uploadPlaceholderPlugin, uploadPlugin(this.options)];
   }
 }
