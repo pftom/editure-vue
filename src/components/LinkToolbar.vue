@@ -4,9 +4,10 @@
       v-if="active"
       :from="view.state.selection.from"
       :to="view.state.selection.to"
-      :on-create-link="onCreateLink"
-      :on-select-link="onSelectLink"
-      :on-remove-link="onClose"
+      :view="view"
+      :onCreateLink="onCreateLink"
+      :onSelectLink="handleOnSelectLink"
+      :onRemoveLink="onClose"
     ></link-editor>
   </floating-toolbar>
 </template>
@@ -35,6 +36,9 @@ export default {
     tooltip: Object,
     dictionary: Object,
     onCreateLink: Function,
+    onSearchLink: Function,
+    onClickLink: Function,
+    onShowToast: Function,
     onClose: Function,
   },
   components: {
@@ -51,6 +55,7 @@ export default {
     active() {
       return isActive({
         view: this.view,
+        isActive: this.isActive,
       });
     },
   },

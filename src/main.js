@@ -16,6 +16,16 @@ import {
   faAlignCenter,
   faAlignRight,
   faAlignLeft,
+  faHeading,
+  faListOl,
+  faListUl,
+  faCheck,
+  faTable,
+  faQuoteLeft,
+  faFileCode,
+  faGripHorizontal,
+  faImage,
+  faTint,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import App from "./App.vue";
@@ -34,7 +44,17 @@ library.add(
   faChevronUp,
   faAlignCenter,
   faAlignRight,
-  faAlignLeft
+  faAlignLeft,
+  faListOl,
+  faListUl,
+  faHeading,
+  faCheck,
+  faTable,
+  faQuoteLeft,
+  faFileCode,
+  faGripHorizontal,
+  faImage,
+  faTint
 );
 
 Vue.component("font-awesome-icon", FontAwesomeIcon);

@@ -19,6 +19,7 @@
     "core-js": "^3.6.5",
     "element-ui": "^2.15.1",
     "highlight.js": "^10.6.0",
+    "lodash": "^4.17.21",
     "lodash.some": "^4.6.0",
     "medium-zoom": "^1.0.6",
     "monaco-editor": "^0.23.0",
@@ -29,6 +30,7 @@
     "prosemirror-tables": "^1.1.1",
     "prosemirror-utils": "0.9.6",
     "prosemirror-view": "^1.18.0",
+    "smooth-scroll-into-view-if-needed": "^1.1.32",
     "tiptap": "^1.32.1",
     "tiptap-extensions": "^1.35.1",
     "vue": "^2.6.11"

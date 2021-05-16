@@ -8,6 +8,7 @@ const base = {
   danger: "Danger",
 
   // Table
+  table: "Table",
   addColumnAfter: "Insert column after",
   addColumnBefore: "Insert column before",
   addRowAfter: "Insert row after",
@@ -57,6 +58,8 @@ const base = {
   strikethrough: "Strikethrough",
   strong: "Bold",
   subheading: "Subheading",
+
+  diffBlock: "DiffBlock",
 };
 
 export default base;
