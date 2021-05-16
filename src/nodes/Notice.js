@@ -24,6 +24,7 @@ function getStyleFromRawMatch(rawMatch) {
 
 export default class Notice extends Node {
   get styleOptions() {
+    console.log("options", this.options);
     return Object.entries({
       default: this.options.dictionary.default,
       primary: this.options.dictionary.primary,
@@ -82,6 +83,7 @@ export default class Notice extends Node {
   }
 
   commands({ type }) {
+    console.log("type", type);
     return (attrs) => toggleWrap(type, attrs);
   }
 

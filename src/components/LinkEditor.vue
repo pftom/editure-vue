@@ -46,6 +46,7 @@ export default {
     "onSearchLink",
     "onClickLink",
     "onRemoveLink",
+    "onShowToast",
   ],
   components: {
     CustomTooltip,
@@ -80,8 +81,6 @@ export default {
     },
     showCreateLink() {
       const value = this.value;
-      const results =
-        this.results[value.trim()] || this.results[this.previousValue] || [];
 
       const looksLikeUrl = value.match(/^https?:\/\//i);
 

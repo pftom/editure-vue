@@ -1,171 +1,6 @@
 <template>
   <div class="editure-content">
     <div class="editure">
-      <editor-menu-bar :editor="editor" v-slot="{ commands, isActive }">
-        <div class="menubar">
-          <button class="menubar__button" @click="commands.undo">
-            undo
-          </button>
-
-          <button class="menubar__button" @click="commands.redo">
-            redo
-          </button>
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.bold() }"
-            @click="commands.bold"
-          >
-            bold
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.italic() }"
-            @click="commands.italic"
-          >
-            italic
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.strike() }"
-            @click="commands.strike"
-          >
-            strike
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.underline() }"
-            @click="commands.underline"
-          >
-            underline
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.code() }"
-            @click="commands.code"
-          >
-            code
-          </button>
-
-          <button class="menubar__button" @click="handleToggleLink">
-            link
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.paragraph() }"
-            @click="commands.paragraph"
-          >
-            paragraph
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.heading({ level: 1 }) }"
-            @click="commands.heading({ level: 1 })"
-          >
-            H1
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.heading({ level: 2 }) }"
-            @click="commands.heading({ level: 2 })"
-          >
-            H2
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.heading({ level: 3 }) }"
-            @click="commands.heading({ level: 3 })"
-          >
-            H3
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.bullet_list() }"
-            @click="commands.bullet_list"
-          >
-            ul
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.ordered_list() }"
-            @click="commands.ordered_list"
-          >
-            ol
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.todo_list() }"
-            @click="commands.todo_list"
-          >
-            checklist
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.blockquote() }"
-            @click="commands.blockquote"
-          >
-            quote
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.code_block() }"
-            @click="commands.code_block"
-          >
-            code-block
-          </button>
-
-          <button class="menubar__button" @click="commands.diff_block">
-            diff-block
-          </button>
-
-          <button
-            class="menubar__button"
-            :class="{ 'is-active': isActive.notice() }"
-            @click="commands.notice"
-          >
-            notice
-          </button>
-
-          <button class="menubar__button">
-            <input
-              type="file"
-              ref="image"
-              @change="handleImagePicked"
-              class="image-upload"
-            />
-            <span @click="clickImageButton">image</span>
-          </button>
-
-          <button class="menubar__button" @click="commands.horizontal_rule">
-            hr
-          </button>
-
-          <button
-            class="menubar__button"
-            @click="
-              commands.createTable({
-                rowsCount: 3,
-                colsCount: 3,
-                withHeaderRow: true,
-              })
-            "
-          >
-            table
-          </button>
-        </div>
-      </editor-menu-bar>
       <editor-menu-bubble
         class="menububble"
         :editor="editor"
@@ -248,12 +83,26 @@
         :onShowToast="onShowToast"
         :onClose="handleCloseLinkMenu"
       ></link-toolbar>
+      <block-menu
+        :view="editor.view"
+        :commands="editor.commands"
+        :dictionary="dictionary"
+        :isActive="blockMenuOpen"
+        :search="blockMenuSearch"
+        :onClose="handleCloseBlockMenu"
+        :uploadImage="uploadImage"
+        :onLinkToolbarOpen="handleOpenLinkMenu"
+        :onImageUploadStart="onImageUploadStart"
+        :onImageUploadStop="onImageUploadStop"
+        :onShowToast="onShowToast"
+        :embeds="embeds"
+      ></block-menu>
     </div>
   </div>
 </template>
 
 <script>
-import { Editor, EditorContent, EditorMenuBar, EditorMenuBubble } from "tiptap";
+import { Editor, EditorContent, EditorMenuBubble } from "tiptap";
 import {
   Bold,
   Italic,
@@ -272,7 +121,7 @@ import {
   Placeholder,
   TrailingNode,
 } from "tiptap-extensions";
-import { Title, Doc } from "./extensions";
+import { Title, Doc, BlockMenuTrigger } from "./extensions";
 import {
   TodoItem,
   Image,
@@ -297,16 +146,17 @@ import SelectionToolbar from "@/components/SelectionToolbar";
 import LinkToolbar from "./components/LinkToolbar.vue";
 import getDataTransferFiles from "./lib/getDataTransferFiles";
 import insertFiles from "@/commands/insertFiles";
+import BlockMenu from "./components/BlockMenu.vue";
 
 export default {
   name: "App",
   props: ["onCreateLink", "onSearchLink", "onShowToast", "onClose"],
   components: {
     EditorContent,
-    EditorMenuBar,
     EditorMenuBubble,
     SelectionToolbar,
     LinkToolbar,
+    BlockMenu,
   },
   data() {
     return {
@@ -328,7 +178,7 @@ export default {
           new CodeBlock(),
           new DiffBlock(),
           new Notice({
-            dictionary: this.dictionary,
+            dictionary,
           }),
           new ListItem(),
           new OrderedList(),
@@ -364,6 +214,11 @@ export default {
           new Code(),
           new Doc(),
           new Title(),
+          new BlockMenuTrigger({
+            dictionary,
+            onOpen: this.handleOpenBlockMenu,
+            onClose: this.handleCloseBlockMenu,
+          }),
           new Placeholder({
             showOnlyCurrent: false,
             emptyNodeText: (node) => {
@@ -376,8 +231,13 @@ export default {
       }),
       linkUrl: null,
       linkMenuIsActive: false,
-      selectionMenuOpen: false,
       dictionary: dictionary,
+      blockMenuOpen: false,
+      linkMenuOpen: false,
+      blockMenuSearch: "",
+      selectionMenuOpen: false,
+      isEditorFocused: false,
+      embeds: [],
     };
   },
   methods: {
@@ -402,7 +262,9 @@ export default {
       this.handleOpenLinkMenu();
     },
     handleOpenLinkMenu() {
-      this.showLinkMenu(this.editor.getMarkAttrs("link"));
+      // this.showLinkMenu(this.editor.getMarkAttrs("link"));
+      this.blockMenuOpen = false;
+      this.linkMenuOpen = true;
     },
     showLinkMenu(attrs) {
       this.linkUrl = attrs.href;
@@ -495,6 +357,14 @@ export default {
     },
     onClickLink(href) {
       window.open(href, "_blank");
+    },
+    handleOpenBlockMenu(search) {
+      this.blockMenuOpen = true;
+      this.blockMenuSearch = search;
+    },
+    handleCloseBlockMenu() {
+      if (!this.blockMenuOpen) return;
+      this.blockMenuOpen = false;
     },
   },
   beforeDestroy() {
